@@ -1,0 +1,97 @@
+import React, { useState } from "react";
+import { message, Upload, Progress, Space } from "antd";
+import ImgCrop from "antd-img-crop";
+import axios from "axios";
+import { isEmpty, isNil } from "ramda";
+
+const exists = (i) => !isEmpty(i) && !isNil(i);
+
+const App = ({ onUploadComplete, existingFileList }) => {
+  let [fileList, setFileList] = useState();
+  if (!exists(fileList) && exists(existingFileList)) {
+    setFileList(existingFileList);
+  }
+  const [canUpload, setCanUpload] = useState(true);
+  const [progress, setProgress] = useState(0);
+  const onChange = ({ fileList }) => {
+    if (canUpload) {
+      setFileList(fileList);
+      const file = fileList[0].originFileObj;
+      const url =
+        "https://api.cloudinary.com/v1_1/midas-touch-technoogies/raw/upload";
+      const formData = new FormData();
+      if (file) {
+        formData.append("file", file);
+        formData.append("upload_preset", "lcemibrf");
+        formData.append("api_key", "529993435491544");
+        axios({
+          method: "POST",
+          data: formData,
+          headers: { "Content-Type": "multipart/form-data" },
+          onUploadProgress: (progressEvent) => {
+            const percentage =
+              (progressEvent.loaded * 100) / progressEvent.total;
+            setProgress(+percentage.toFixed(2));
+          },
+          url,
+        })
+          .then((response) => {
+            onUploadComplete(response.data.secure_url);
+          })
+          .then((data) => {});
+      }
+    } else {
+      setCanUpload(true);
+    }
+  };
+
+  const beforeUpload = (file) => {
+    setFileList([]);
+    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+    if (!isJpgOrPng) {
+      message.error("You can only upload JPG/PNG file!");
+      setCanUpload(false);
+    }
+    const isLt2M = file.size < 436342;
+    if (!isLt2M) {
+      message.error("Image must smaller than 2MB!");
+      setCanUpload(false);
+    }
+    return false;
+  };
+
+  const onPreview = async (file) => {
+    let src = file.url;
+    if (!src) {
+      src = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file.originFileObj);
+        reader.onload = () => resolve(reader.result);
+      });
+    }
+    const image = new Image();
+    image.src = src;
+    const imgWindow = window.open(src);
+    imgWindow?.document.write(image.outerHTML);
+  };
+  console.log(progress);
+  return (
+    <ImgCrop rotate>
+      <Upload
+        listType="picture-card"
+        fileList={fileList}
+        onChange={onChange}
+        onPreview={onPreview}
+        beforeUpload={beforeUpload}
+      >
+        {(progress === 0 || progress === 100) && "+ Upload"}
+        {progress > 0 && progress < 100 && (
+          <Space wrap>
+            <Progress size="small" percent={progress} />
+          </Space>
+        )}
+      </Upload>
+    </ImgCrop>
+  );
+};
+export default App;

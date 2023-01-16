@@ -1,0 +1,63 @@
+[
+    {
+        "id": "1",
+        "thumbnail": "/static/img/categories/hair.jpg",
+        "title": "Hair",
+        "slug": "hair",
+        "links": ["Cutting", "Coloring", "Styling"]
+    },
+    {
+        "id": "2",
+        "thumbnail": "/static/img/categories/face.jpg",
+        "title": "Facials",
+        "slug": "facials",
+        "links": ["Anti-aging", "Accupuncture", "Brightening", "Microdermabrasion"]
+    },
+    {
+        "id": "3",
+        "thumbnail": "/static/img/categories/nails.jpg",
+        "title": "Nails",
+        "slug": "nails",
+        "links": [
+            "Manicure",
+            "Pedicure",
+            "Acrylic overlays",
+            "Extensions"
+        ]
+    },
+    {
+        "id": "4",
+        "thumbnail": "/static/img/categories/face2.jpg",
+        "title": "Body",
+        "slug": "body",
+        "links": ["Waxing", "Threading", "Cupping", "Hand and feet"]
+    },
+    {
+        "id": "5",
+        "thumbnail": "/static/img/categories/wellness.jpg",
+        "title": "Wellness",
+        "slug": "wellness",
+        "links": ["Therapeutic Massage", "Counselling", "Reflexology"]
+    },
+    {
+        "id": "6",
+        "thumbnail": "/static/img/categories/teeth.jpg",
+        "title": "Medical & Dental",
+        "slug": "medical-and-dental",
+        "links": ["General Dentistry.", "Cosmetic Dentistry", "Pediatric Dentistry"]
+    },
+    {
+        "id": "7",
+        "thumbnail": "/static/img/categories/massage.jpg",
+        "title": "Massage",
+        "slug":"massage",
+        "links": ["Bio-sculpture", "Gel-it", "Pressure point", "Back, Neck and Shoulder"]
+    },
+    {
+        "id": "8",
+        "thumbnail": "/static/img/categories/skin.jpg",
+        "title": "Skin care",
+        "slug": "skin-care",
+        "links": ["Blue Light Therapy", "Anti-aging", "Botox"]
+    }
+]
