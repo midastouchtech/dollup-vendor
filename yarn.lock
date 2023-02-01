@@ -97,6 +97,11 @@
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.3.tgz#555193ab2e3bb3b6adc3d551c9c030d9e860daf6"
   integrity sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==
 
+"@netlify/next@^1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@netlify/next/-/next-1.4.3.tgz#13f30eaedfd434d4e280afc9bdeefaea1a861456"
+  integrity sha512-2O4qfDZMCltFWUZ1Ba2U3Ayf/d+Hifw8nUInv5hHitbl/fNfQpB4CQIgBCvry16ljHJ05uBWuIAmScSNY+zMcw==
+
 "@next/env@12.1.0":
   version "12.1.0"
   resolved "https://registry.yarnpkg.com/@next/env/-/env-12.1.0.tgz#73713399399b34aa5a01771fb73272b55b22c314"

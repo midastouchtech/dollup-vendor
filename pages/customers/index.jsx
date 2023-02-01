@@ -6,6 +6,7 @@ import FormSearchSimple from '~/components/shared/forms/FormSearchSimple';
 import HeaderDashboard from '~/components/shared/headers/HeaderDashboard';
 import { connect, useDispatch } from 'react-redux';
 import { toggleDrawerMenu } from '~/store/app/action';
+import Link from 'next/link';
 
 const CustomersPage = () => {
     const dispatch = useDispatch();
@@ -24,9 +25,11 @@ const CustomersPage = () => {
                         <FormSearchSimple />
                     </div>
                     <div className="ps-section__actions">
-                        <a className="ps-btn success" href="#">
+                        <Link className="ps-btn success" href="#">
+                            <a className="ps-btn success">
                             <i className="icon icon-plus mr-2"></i>Add Customer
-                        </a>
+                            </a>
+                        </Link>
                     </div>
                 </div>
                 <div className="ps-section__content">

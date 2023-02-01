@@ -7,24 +7,24 @@ const TableOrdersItems = () => {
     const orderItems = [
         {
             id: '#A580',
-            date: 'Aug 15, 2020',
-            product: 'Unero Black Military',
+            date: 'Aug 15, 2022',
+            product: 'Copper Massage',
             payment: true,
-            fullfillment: 'delivered',
+            fullfillment: 'completed',
             total: 'R56.00',
         },
         {
             id: '#B260',
-            date: 'Aug 16, 2020',
-            product: 'Marsh Speaker',
+            date: 'Aug 16, 2022',
+            product: 'Manicure',
             payment: false,
-            fullfillment: 'delivered',
+            fullfillment: 'completed',
             total: 'R56.00',
         },
         {
             id: '#A583',
             date: 'Aug 17, 2020',
-            product: 'Lined Blend T-Shirt',
+            product: 'Radiotherapy Skin Care',
             payment: true,
             fullfillment: 'In Progress',
             total: 'R516.00',
@@ -32,15 +32,15 @@ const TableOrdersItems = () => {
         {
             id: '#A523',
             date: 'Aug 18, 2020',
-            product: 'DJI MAcvic Quadcopter',
+            product: 'Pedio care face wash',
             payment: false,
-            fullfillment: 'delivered',
+            fullfillment: 'completed',
             total: 'R112.00',
         },
         {
             id: '#A112',
             date: 'Aug 19, 2020',
-            product: 'Black T-Shirt',
+            product: 'Pedicure',
             payment: true,
             fullfillment: 'Cancel',
             total: 'R30.00',
@@ -82,7 +82,7 @@ const TableOrdersItems = () => {
                 break;
             default:
                 fullfillmentView = (
-                    <span className="ps-fullfillment success">delivered</span>
+                    <span className="ps-fullfillment success">completed</span>
                 );
                 break;
         }

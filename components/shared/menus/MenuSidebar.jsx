@@ -26,11 +26,6 @@ const MenuSidebar = () => {
             icon: 'icon-users2',
         },
         {
-            text: 'Categories',
-            url: '/categories',
-            icon: 'icon-users2',
-        },
-        {
             text: 'Settings',
             url: '/settings',
             icon: 'icon-cog',

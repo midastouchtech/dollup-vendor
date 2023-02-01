@@ -12,6 +12,7 @@
     },
     "dependencies": {
         "@ant-design/icons": "^5.0.0",
+        "@netlify/next": "^1.4.3",
         "@zeit/next-sass": "^1.0.1",
         "antd": "^5.1.7",
         "antd-img-crop": "^4.5.2",
