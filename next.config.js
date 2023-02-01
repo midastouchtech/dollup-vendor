@@ -8,6 +8,8 @@
 * */
 const withPlugins = require('next-compose-plugins');
 const withImages = require('next-images');
+const withTM = require('next-transpile-modules')(['antd', 'antd-img-crop']);
+
 
 const nextSettings = {
     env: {
@@ -16,4 +18,4 @@ const nextSettings = {
     },
 };
 
-module.exports = withPlugins([withImages(), nextSettings]);
+module.exports = withPlugins([withTM, withImages(), nextSettings]);

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import DefaultLayout from '~/components/layouts/DefaultLayout';
 import { wrapper } from '~/store/store';
 import '~/styles/style.scss';
-import 'antd/dist/antd.min.css';
 import io from "socket.io-client";
 
 function App({ Component, pageProps }) {

@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { message, Upload, Progress, Space } from "antd";
-import ImgCrop from "antd-img-crop";
 import axios from "axios";
 import { isEmpty, isNil } from "ramda";
+import dynamic from 'next/dynamic'
+
+const ImgCrop = dynamic(import('antd-img-crop'), { ssr: false }) 
 
 const exists = (i) => !isEmpty(i) && !isNil(i);
 

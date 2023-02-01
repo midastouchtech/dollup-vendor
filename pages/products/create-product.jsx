@@ -3,10 +3,9 @@ import ContainerDefault from "~/components/layouts/ContainerDefault";
 import Upload from "~/components/upload";
 import HeaderDashboard from "~/components/shared/headers/HeaderDashboard";
 import { connect, useDispatch } from "react-redux";
-import { Select } from "antd";
 import { toggleDrawerMenu } from "~/store/app/action";
 import categories from "~/public/data/categories.json";
-import { Form, notification } from "antd";
+import { Select, Form, notification } from "antd";
 import { isEmpty } from "ramda";
 import { useRouter } from 'next/router';
 
