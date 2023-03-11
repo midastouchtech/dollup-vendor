@@ -17,7 +17,8 @@ const StyleSheets = () => (
             name="description"
             content="Martfury - React eCommerce Template"
         />
-        <title>Martfury | React eCommerce Admin Template</title>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDka_7ppWokFIBPOxpKQ41NfgP6Q1Q3JBM&libraries=places"></script>
+        <title>Dollup</title>
         <link
             href="https://fonts.googleapis.com/css?family=Work+Sans:300,400,500,600,700&amp;amp;subset=latin-ext"
             rel="stylesheet"

@@ -50,7 +50,7 @@ const TableProjectItems = ({services, socket}) => {
                 </td>
                 <td>{item?.date}</td>
                 <td>
-                    <DropdownAction id={item?.id} socket={socket} />
+                    <DropdownAction type="services" id={item?.id} socket={socket} />
                 </td>
             </tr>
         );

@@ -34,3 +34,15 @@
 @import 'modules/footer';
 
 @import 'elements/helpers';
+
+.suggestion-item{
+    padding: 10px;
+    background-color: rgb(196, 205, 205);
+    border: 1px solid #ccc;
+}
+
+.suggestion-item--active{
+    padding: 10px;
+    background-color: rgb(132, 245, 245);
+    border: 1px solid #0d1212;
+}

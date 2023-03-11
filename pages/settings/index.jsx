@@ -5,7 +5,7 @@ import HeaderDashboard from '~/components/shared/headers/HeaderDashboard';
 import { connect, useDispatch } from 'react-redux';
 import { toggleDrawerMenu } from '~/store/app/action';
 
-const SettingsPage = () => {
+const SettingsPage = ({vendor, socket}) => {
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(toggleDrawerMenu(false));
@@ -20,7 +20,7 @@ const SettingsPage = () => {
                             <h4>Account Settings</h4>
                         </div>
                         <div className="ps-card__content">
-                            <FormAccountSettings />
+                            <FormAccountSettings vendor={vendor} socket={socket}/>
                         </div>
                     </section>
                 </div>
