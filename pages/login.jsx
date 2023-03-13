@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { connect, useDispatch } from "react-redux";
 import { toggleDrawerMenu } from "~/store/app/action";
 import styled from "styled-components";
+import { useRouter } from "next/router";
+import Cookies from "js-cookie";
 
 const Container = styled.div`
   display: flex;
@@ -19,14 +21,24 @@ const FormContainer = styled.div`
 const Login = ({ vendor, socket }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("")
   const dispatch = useDispatch();
+  const router = useRouter()
   useEffect(() => {
     dispatch(toggleDrawerMenu(false));
   }, []);
 
-  const onSubmit =() => {
-
-
+  const onSubmit =(e) => {
+    e.preventDefault();
+    setError('')
+    socket.emit("VENDOR_LOGIN", {email, password})
+    socket.on("VENDOR_LOGIN_SUCCESS", (vendor)=> {
+        Cookies.set('dollup_logged_in_vendor',JSON.stringify(vendor), { expires: 1 } )
+        router.push('/')
+    })
+    socket.on("VENDOR_LOGIN_ERROR", (err) => {
+        setError(err.message)
+    })
   }
   return (
     <Container>
@@ -59,8 +71,11 @@ const Login = ({ vendor, socket }) => {
         </div>
         <div className="ps-form__submit text-center">
           <button className="ps-btn success" onClick={onSubmit}>
-            Loginnn
+            Login
           </button>
+        </div>
+        <div className="ps-form__submit text-center">
+          {error}
         </div>
       </FormContainer>
     </Container>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import ContainerDefault from '~/components/layouts/ContainerDefault';
+import ContainerDashboard from '~/components/layouts/ContainerDashboard';
 import Pagination from '~/components/elements/basic/Pagination';
 import TableCustomerItems from '~/components/shared/tables/TableCustomerItems';
 import FormSearchSimple from '~/components/shared/forms/FormSearchSimple';
@@ -26,7 +26,7 @@ const CustomersPage = ({ socket, vendor }) => {
         })
       }
     return (
-        <ContainerDefault title="Customers">
+        <ContainerDashboard title="Customers">
             <HeaderDashboard
                 title="Customers"
                 description="Martfury Customer Listing"
@@ -38,9 +38,9 @@ const CustomersPage = ({ socket, vendor }) => {
                     </div>
                     <div className="ps-section__actions">
                         <Link className="ps-btn success" href="/customers/create-customer">
-                            <a className="ps-btn success">
+                           
                             <i className="icon icon-plus mr-2"></i>Add Customer
-                            </a>
+                            
                         </Link>
                     </div>
                 </div>
@@ -52,7 +52,7 @@ const CustomersPage = ({ socket, vendor }) => {
                     <Pagination />
                 </div>
             </section>
-        </ContainerDefault>
+        </ContainerDashboard>
     );
 };
 export default connect((state) => state.app)(CustomersPage);

@@ -7,50 +7,33 @@ import WidgetEarningSidebar from '~/components/shared/widgets/WidgetEarningSideb
 import WidgetUserWelcome from '~/components/shared/widgets/WidgetUserWelcome';
 import HeaderDashboard from '~/components/shared/headers/HeaderDashboard';
 import { useRouter } from "next/router";
-import { useDispatch } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import cookies from "js-cookie";
 import { saveVendor } from '~/store/app/action';
-import { isEmpty } from 'ramda'
+import { isEmpty, isNil } from 'ramda';
 
-const ContainerDashboard = ({ children, title, socket }) => {
+const exists = i => !isNil(i) && !isEmpty(i);
+
+const ContainerDashboard = ({ children, title, socket, vendor }) => {
     const router = useRouter();
     const dispatch = useDispatch();
-    const [vendor, setVendor] = useState({})
-    
-    const { vendorId } = router.query;
-    console.log("router query", router.query)
     const cookieVendor = cookies.get("dollup_logged_in_vendor");
-    console.log("cookier vendor", cookieVendor)
-    //console.log("parsed cookievendr", JSON.parse(cookieVendor))
+
+    if(cookieVendor && !exists(vendor)){
+        dispatch(saveVendor(JSON.parse(cookieVendor)));
+    }
+    else if(!exists(cookieVendor) && !exists(vendor)){
+        if(typeof window !== "undefined"){
+            window.location.href = '/login';
+        }
+    }
+
     let titleView;
     if (title !== undefined) {
         titleView = process.env.title + ' | ' + title;
     } else {
         titleView = process.env.title + ' | ' + process.env.titleDescription;
     }
-    if(socket && isEmpty(vendor)){
-        console.log("has socket and empty vendr")
-        console.log("vendorId", vendorId)
-        if(!vendorId && cookieVendor){
-            console.log("has no vendor id but has cookie vendor")
-
-            setVendor(JSON.parse(cookieVendor))
-            dispatch(saveVendor(JSON.parse(cookieVendor)));
-        }
-        else{
-            console.log("has vendor id, so fetching vendor")
-            socket.emit("GET_VENDOR", { id: vendorId })
-            socket.on("RECEIVE_VENDOR", (data)=>{            
-                setVendor(data)
-                dispatch(saveVendor(data));
-                cookies.set("dollup_logged_in_vendor", JSON.stringify(data), { expires: 1 });
-                socket.off("RECEIVE_VENDOR")
-            })
-            
-        }
-    }
-    console.log("layout vendor", vendor)
-
     return (
         <div className="martfury-admin">
             <Head>
@@ -81,4 +64,4 @@ const ContainerDashboard = ({ children, title, socket }) => {
     );
 };
 
-export default ContainerDashboard;
+export default connect((state) => state.app)(ContainerDashboard);

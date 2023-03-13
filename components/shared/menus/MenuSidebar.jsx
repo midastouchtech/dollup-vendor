@@ -39,10 +39,10 @@ const MenuSidebar = () => {
                     key={index}
                     className={router.pathname === item.url ? 'active' : ''}>
                     <Link href={item.url}>
-                        <a>
+                        <p>
                             <i className={item.icon}></i>
                             {item.text}
-                        </a>
+                        </p>
                     </Link>
                 </li>
             ))}

@@ -51,10 +51,10 @@ const ProductPage = ({ socket, vendor }) => {
       <section className="ps-items-listing">
         <div className="ps-section__actions">
           <Link href="/products/create-product">
-            <a className="ps-btn success">
+            <p className="ps-btn success">
               <i className="icon icon-plus mr-2" />
               New Service
-            </a>
+            </p>
           </Link>
         </div>
         <div className="ps-section__header">

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import ContainerDefault from '~/components/layouts/ContainerDefault';
 import FormAccountSettings from '~/components/shared/forms/FormAccountSettings';
 import HeaderDashboard from '~/components/shared/headers/HeaderDashboard';
@@ -7,6 +7,7 @@ import { toggleDrawerMenu } from '~/store/app/action';
 
 const SettingsPage = ({vendor, socket}) => {
     const dispatch = useDispatch();
+    
     useEffect(() => {
         dispatch(toggleDrawerMenu(false));
     }, []);

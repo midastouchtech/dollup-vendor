@@ -38,6 +38,7 @@ const App = ({ onUploadComplete, existingFileList }) => {
           url,
         })
           .then((response) => {
+            console.log("upload complete", response.data.secure_url)
             onUploadComplete(response.data.secure_url);
           })
           .then((data) => {});
@@ -78,7 +79,6 @@ const App = ({ onUploadComplete, existingFileList }) => {
   };
   console.log(progress);
   return (
-    <ImgCrop rotate>
       <Upload
         listType="picture-card"
         fileList={fileList}
@@ -93,7 +93,6 @@ const App = ({ onUploadComplete, existingFileList }) => {
           </Space>
         )}
       </Upload>
-    </ImgCrop>
   );
 };
 export default App;

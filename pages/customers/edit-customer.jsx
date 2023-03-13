@@ -9,6 +9,7 @@ import { Select, Form, notification } from "antd";
 import { isEmpty } from "ramda";
 import { useRouter } from 'next/router';
 import Link from "next/link";
+import AutoComplete from "~/components/autocomplete";
 
 // import {  Upload } from 'antd';
 
@@ -111,15 +112,42 @@ const CreateServicePage = ({ vendor, socket }) => {
                     </div>
                     <div className="form-group">
                       <label>
-                        City<sup>*</sup>
+                        Email<sup>*</sup>
                       </label>
                         <input
                           className="form-control"
                           type="text"
-                          placeholder="Enter city name..."
-                          value={details?.city}
-                          onChange={(e) => setDetail("city", e.target.value)}
+                          placeholder="Enter email..."
+                          value={details?.email}
+                          onChange={(e) => setDetail("email", e.target.value)}
                         />
+                    </div>
+                    <div className="form-group">
+                      <label>
+                        Password<sup>*</sup>
+                      </label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          placeholder="Enter email..."
+                          value={details?.password}
+                          onChange={(e) =>
+                            setDetail("password", e.target.value)
+                          }
+                        />
+                    </div>
+
+                    <div className="form-group">
+                      <label>
+                        Address<sup>*</sup>
+                      </label>
+                      <AutoComplete
+                        value={details?.address?.address}
+                        onChange={(v) => setDetail("address", {address:v})}
+                        onSelect={(v, l) => {
+                          setDetail("address", {address:v, coordinates:l})
+                        }}
+                      />
                     </div>
                   </div>
                 </figure>

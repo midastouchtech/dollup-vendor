@@ -19,7 +19,7 @@ const TableCustomerItems = ({socket, customers}) => {
                     <strong>{item.name}</strong>
                 </td>
                 <td>{item.phoneNumber}</td>
-                <td>{item.city}</td>
+                <td>{item?.address?.address?.split(',')[item?.address?.address?.split(',').length -2]}</td>
                 <td>{item.balance ? `R${item.balance}` : 'R 0.00'}</td>
                 <td>{item?.servicesBooked?.length}</td>
                 <td>{badgeView}</td>

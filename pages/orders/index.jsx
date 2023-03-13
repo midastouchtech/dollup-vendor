@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import ContainerDashboard from '~/components/layouts/ContainerDashboard';
 import TableOrdersItems from '~/components/shared/tables/TableOrdersItems';
 import Pagination from '~/components/elements/basic/Pagination';
@@ -9,11 +9,24 @@ import { connect, useDispatch } from 'react-redux';
 import { toggleDrawerMenu } from '~/store/app/action';
 
 const { Option } = Select;
-const OrdersPage = () => {
+const OrdersPage = ({vendor, socket}) => {
     const dispatch = useDispatch();
+    const [ bookings, setBookings ] = useState()
+    const [originalBookings, setOriginalBookings] = useState([])
+
     useEffect(() => {
         dispatch(toggleDrawerMenu(false));
     }, []);
+     console.log(bookings, socket, vendor)
+    if(!bookings && socket && vendor){
+        console.log("getting bookings")
+        socket.emit("GET_VENDOR", {id: vendor.id})
+        socket.on("RECEIVE_VENDOR", data => {
+            setBookings(data.bookings)
+            setOriginalBookings(data.bookings)
+        })
+      }
+      console.log("bookings", bookings)
     return (
         <ContainerDashboard>
             <HeaderDashboard
@@ -56,24 +69,15 @@ const OrdersPage = () => {
                         </form>
                     </div>
                     <div className="ps-section__actions">
-                        <Link href="">
-                            <a className="ps-btn success">
-                                <i className="icon icon-plus mr-2"></i>New Order
-                            </a>
-                        </Link>
-                        <Link
-                            className="ps-btn ps-btn--gray"
-                            href="">
-                           <a> <i className="icon icon-download2 mr-2"></i>Export</a>
+                        <Link href="orders/create-booking">
+                            <p className="ps-btn success">
+                                <i className="icon icon-plus mr-2"></i>New Booking
+                            </p>
                         </Link>
                     </div>
                 </div>
                 <div className="ps-section__content">
-                    <TableOrdersItems />
-                </div>
-                <div className="ps-section__footer">
-                    <p>Show 10 in 30 items.</p>
-                    <Pagination />
+                    <TableOrdersItems socket={socket} bookings={bookings} />
                 </div>
             </section>
         </ContainerDashboard>

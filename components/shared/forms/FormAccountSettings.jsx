@@ -3,7 +3,7 @@ import Upload from "~/components/upload";
 import AutoComplete from "~/components/autocomplete";
 
 const FormAccountSettings = ({vendor, socket}) => {
-  console.log(vendor)
+  console.log("form",vendor)
   const [details, setDetails] = React.useState({
     fullName: "",
     storeName: "",
@@ -12,9 +12,20 @@ const FormAccountSettings = ({vendor, socket}) => {
     address: "",
     bio: "",
     avatar: "",
+    bannerImages:[],
     ...vendor
   });
+  const [updatedVendor, setUpdatedVendor] = React.useState(false);
 
+  if(socket && !updatedVendor){
+    socket.emit("GET_VENDOR", {id: vendor.id})
+    socket.on("RECEIVE_VENDOR", data => {
+      setDetails(data)
+      setUpdatedVendor(true)
+      console.log("updatedvendor", data)
+    })
+  }
+  console.log("details", details)
   const setDetail = (key, value) => {
     setDetails({
       ...details,
@@ -105,12 +116,28 @@ const FormAccountSettings = ({vendor, socket}) => {
             ></textarea>
           </div>
         </div>
-        <div className="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+        <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
           <figure className="ps-block--form-box">
-            <figcaption>Salon profile Image</figcaption>
+            <figcaption>Salon profile Image</figcaption>            
             <div className="ps-block__content">
+            <p>Please upload 1 square cropped image </p>
               <div className="form-group">
                 <Upload onUploadComplete={(url) => setDetail("avatar", url)} />
+              </div>
+            </div>
+          </figure>
+        </div>
+        <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+          <figure className="ps-block--form-box">
+            <figcaption>Salon banner images</figcaption>
+            <div className="ps-block__content">
+              <p>Please upload up to 3 images. Images must have 1650 × 650 dimensions </p>
+              <div className="form-group">
+                <Upload onUploadComplete={(url) => {
+                  const images= details?.bannerImages ?? []
+                  const bannerImages = [...images, url]
+                  setDetail("bannerImages", bannerImages)
+                }} />
               </div>
             </div>
           </figure>

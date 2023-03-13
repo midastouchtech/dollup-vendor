@@ -12,9 +12,9 @@ function Error({ statusCode }) {
                 <p>
                     <strong className="mr-2">Return to</strong>
                     <Link href="/">
-                        <a className="ps-btn ps-btn--black ps-btn--rounded ps-btn--sm">
+                        <p className="ps-btn ps-btn--black ps-btn--rounded ps-btn--sm">
                             Dashboard
-                        </a>
+                        </p>
                     </Link>
                 </p>
             </figure>

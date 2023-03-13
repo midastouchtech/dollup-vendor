@@ -12,9 +12,12 @@ const PlacesAutoComplete = ({onChange, value, onSelect}) => {
       const handleSelect = (address) => {
         geocodeByAddress(address)
           .then((results) => getLatLng(results[0]))
-          .then((latLng) => console.log("Success", latLng))
+          .then((latLng) => {
+            console.log("selecting", address)
+            onSelect(address, latLng)
+          })
           .catch((error) => console.error("Error", error));
-        onSelect(address);
+        
       };
 
     return (<AutoComplete

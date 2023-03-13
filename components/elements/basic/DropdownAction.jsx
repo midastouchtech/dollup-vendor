@@ -13,7 +13,7 @@ const DropdownAction = ({ id, socket, vendor, type }) => {
     e.preventDefault();
     console.log(socket)
     if (socket) {
-      socket.emit("DELETE_VENDOR_SERVICE", { vendor, id });
+      socket.emit("DELETE_VENDOR_SERVICE", { vendor: {_id: vendor._id}, id });
       socket.on("RECEIVE_DELETE_VENDOR_SERVICE_SUCCESS", () => {
         notification.success({
           key: "RECEIVE_DELETE_VENDOR_SERVICE_SUCCESS" + id,
@@ -37,7 +37,7 @@ const DropdownAction = ({ id, socket, vendor, type }) => {
     e.preventDefault();
     console.log(socket)
     if (socket) {
-      socket.emit("DELETE_VENDOR_CUSTOMER", { vendor, id });
+      socket.emit("DELETE_VENDOR_CUSTOMER", { vendor: {_id: vendor._id}, id });
       socket.on("RECEIVE_DELETE_VENDOR_CUSTOMER_SUCCESS", () => {
         notification.success({
           key: "RECEIVE_DELETE_VENDOR_CUSTOMER_SUCCESS" + id,
@@ -51,6 +51,30 @@ const DropdownAction = ({ id, socket, vendor, type }) => {
           key: id + "RECEIVE_DELETE_VENDOR_CUSTOMER_ERROR",
           message: "Success!",
           description: "Your new CUSTOMER has been removed from your store!",
+        });
+      });
+    }
+  };
+
+  const deleteBooking = (e) => {
+    console.log("deleting", id);
+    e.preventDefault();
+    console.log(socket)
+    if (socket) {
+      socket.emit("DELETE_VENDOR_BOOKING", { vendor: {_id: vendor._id}, id });
+      socket.on("RECEIVE_DELETE_VENDOR_BOOKING_SUCCESS", () => {
+        notification.success({
+          key: "RECEIVE_DELETE_VENDOR_BOOKING_SUCCESS" + id,
+          message: "Success!",
+          description: "Your new BOOKING has been removed from your store!",
+        });
+        router.reload(window.location.pathname)
+      });
+      socket.on("RECEIVE_DELETE_VENDOR_BOOKING_ERROR", () => {
+        notification.error({
+          key: id + "RECEIVE_DELETE_VENDOR_BOOKING_ERROR",
+          message: "Success!",
+          description: "Your new BOOKING has been removed from your store!",
         });
       });
     }
@@ -79,7 +103,7 @@ const DropdownAction = ({ id, socket, vendor, type }) => {
           Delete
         </a>
       </Menu.Item></Fragment>}
-      {type !== "services" && 
+      {type === "customers" && 
       <Fragment>
         <Menu.Item
         key={0}
@@ -97,6 +121,28 @@ const DropdownAction = ({ id, socket, vendor, type }) => {
 
       <Menu.Item key={1}>
         <a className="dropdown-item" href="#" onClick={deleteCustomer}>
+          <i className="icon-trash2 mr-2"></i>
+          Delete
+        </a>
+      </Menu.Item></Fragment>}
+      {type === "bookings" && 
+      <Fragment>
+        <Menu.Item
+        key={0}
+        onClick={() =>
+          router.push(
+            `/orders/edit-booking/?vendorId=${vendor?.id}&bookingId=${id}`
+          )
+        }
+      >
+        <>
+          <i className="icon-pencil mr-2"></i>
+          Edit
+        </>
+      </Menu.Item>
+
+      <Menu.Item key={1}>
+        <a className="dropdown-item" href="#" onClick={deleteBooking}>
           <i className="icon-trash2 mr-2"></i>
           Delete
         </a>

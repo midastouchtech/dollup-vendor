@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import ContainerDefault from "~/components/layouts/ContainerDefault";
+import ContainerDashboard from "~/components/layouts/ContainerDashboard";
 import Upload from "~/components/upload";
 import HeaderDashboard from "~/components/shared/headers/HeaderDashboard";
 import { connect, useDispatch } from "react-redux";
@@ -7,15 +7,16 @@ import { toggleDrawerMenu } from "~/store/app/action";
 import categories from "~/public/data/categories.json";
 import { Select, Form, notification } from "antd";
 import { isEmpty } from "ramda";
-import { useRouter } from 'next/router';
-const { uuid } = require('uuidv4');
+import { useRouter } from "next/router";
+import AutoComplete from "~/components/autocomplete";
+const { uuid } = require("uuidv4");
 
 // import {  Upload } from 'antd';
 
 const CreateServicePage = ({ vendor, socket }) => {
   const router = useRouter();
 
-  console.log("vendor", vendor)
+  console.log("vendor", vendor);
   const dispatch = useDispatch();
   const [details, setDetails] = useState({});
 
@@ -31,47 +32,40 @@ const CreateServicePage = ({ vendor, socket }) => {
     socket.onAny((event, ...args) => {
       console.log(event, args);
     });
-    notification.destroy(details.name)
-    console.log(details)
+    notification.destroy(details.name);
+    console.log(details);
     if (socket && !isEmpty(details)) {
-      socket.emit("CREATE_VENDOR_CUSTOMER", { vendor, customer: {
-        active: true,
-        dateAdded: new Date(),
-        servicesBooked: [],
-        servicesCompleted: [],
-        id: uuid(),
-        ...details
-      } });
+      socket.emit("CREATE_VENDOR_CUSTOMER", {
+        vendor,
+        customer: {
+          active: true,
+          dateAdded: new Date(),
+          servicesBooked: [],
+          servicesCompleted: [],
+          id: uuid(),
+          ...details,
+        },
+      });
       socket.on("RECEIVE_CREATE_VENDOR_CUSTOMER_SUCCESS", () => {
         notification.success({
           key: details.name,
-          message: 'Success!',
-          description:
-            'Your new customer has been added to your store!',
+          message: "Success!",
+          description: "Your new customer has been added to your store!",
         });
-
-        setDetails({
-          name: "",
-          phoneNumber: "",
-          city: "",
-          avatar: "",
-          isActive: true,
-        });
-        router.push('/customers')
+        router.push("/customers");
       });
       socket.on("RECEIVE_CREATE_VENDOR_CUSTOMER_ERROR", () => {
         notification.error({
           key: details.name,
-          message: 'Something went wrong.',
-          description:
-            'Your new Service could not be added to your store.',
-        });       
+          message: "Something went wrong.",
+          description: "Your new Service could not be added to your store.",
+        });
       });
     }
   };
 
   return (
-    <ContainerDefault title="Create new product">
+    <ContainerDashboard title="Create new product">
       <HeaderDashboard
         title="Create Customer"
         description="Dollup Create New Customer "
@@ -123,32 +117,71 @@ const CreateServicePage = ({ vendor, socket }) => {
                           className="form-control"
                           type="text"
                           placeholder="Enter phone number..."
-                          value={details.name}
-                          onChange={(e) => setDetail("phoneNumber", e.target.value)}
+                          value={details.phoneNumber}
+                          onChange={(e) =>
+                            setDetail("phoneNumber", e.target.value)
+                          }
                         />
                       </Form.Item>
                     </div>
                     <div className="form-group">
                       <label>
-                        City<sup>*</sup>
+                        Email<sup>*</sup>
                       </label>
                       <Form.Item
-                        name="city"
+                        name="email"
                         rules={[
                           {
                             required: true,
-                            message: "Please input customer city",
+                            message: "Please input customer phone number",
                           },
                         ]}
                       >
                         <input
                           className="form-control"
                           type="text"
-                          placeholder="Enter city name..."
-                          value={details.name}
-                          onChange={(e) => setDetail("city", e.target.value)}
+                          placeholder="Enter email..."
+                          value={details.email}
+                          onChange={(e) => setDetail("email", e.target.value)}
                         />
                       </Form.Item>
+                    </div>
+                    <div className="form-group">
+                      <label>
+                        Password<sup>*</sup>
+                      </label>
+                      <Form.Item
+                        name="password"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please input customer phone number",
+                          },
+                        ]}
+                      >
+                        <input
+                          className="form-control"
+                          type="text"
+                          placeholder="Enter email..."
+                          value={details.password}
+                          onChange={(e) =>
+                            setDetail("password", e.target.value)
+                          }
+                        />
+                      </Form.Item>
+                    </div>
+
+                    <div className="form-group">
+                      <label>
+                        Address<sup>*</sup>
+                      </label>
+                      <AutoComplete
+                        value={details?.address?.address}
+                        onChange={(v) => setDetail("address", {address:v})}
+                        onSelect={(v, l) => {
+                          setDetail("address", {address:v, coordinates:l})
+                        }}
+                      />
                     </div>
                   </div>
                 </figure>
@@ -157,12 +190,10 @@ const CreateServicePage = ({ vendor, socket }) => {
                 <figure className="ps-block--form-box">
                   <figcaption>Profile Image</figcaption>
                   <div className="ps-block__content">
-                    <div className="form-group">                      
-                        <Upload
-                          onUploadComplete={(url) =>
-                            setDetail("avatar", url)
-                          }
-                        />
+                    <div className="form-group">
+                      <Upload
+                        onUploadComplete={(url) => setDetail("avatar", url)}
+                      />
                     </div>
                   </div>
                 </figure>
@@ -174,11 +205,13 @@ const CreateServicePage = ({ vendor, socket }) => {
               Back
             </a>
             <button className="ps-btn ps-btn--gray">Cancel</button>
-            <button className="ps-btn" onClick={handleSubmit}>Submit</button>
+            <button className="ps-btn" onClick={handleSubmit}>
+              Submit
+            </button>
           </div>
         </Form>
       </section>
-    </ContainerDefault>
+    </ContainerDashboard>
   );
 };
 export default connect((state) => state.app)(CreateServicePage);
