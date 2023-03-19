@@ -9,6 +9,10 @@ import { Select, Form, notification } from "antd";
 import { isEmpty, omit } from "ramda";
 import { useRouter } from "next/router";
 const { uuid } = require("uuidv4");
+import { TimePicker } from "antd";
+import dayjs from 'dayjs';
+
+const format = 'HH:mm';
 
 // import {  Upload } from 'antd';
 
@@ -20,11 +24,11 @@ const CreateBookingPage = ({ vendor, socket }) => {
   const [details, setDetails] = useState({ isPaid: false, price: 0 });
   const [updatedVendor, setUpdatedVendor] = useState();
 
-  if(socket && ! updatedVendor){
-    socket.emit("GET_VENDOR", {id: vendor.id})
-    socket.on("RECEIVE_VENDOR", data => {
-      setUpdatedVendor(data)
-    })
+  if (socket && !updatedVendor) {
+    socket.emit("GET_VENDOR", { id: vendor.id });
+    socket.on("RECEIVE_VENDOR", (data) => {
+      setUpdatedVendor(data);
+    });
   }
   useEffect(() => {
     dispatch(toggleDrawerMenu(false));
@@ -175,6 +179,18 @@ const CreateBookingPage = ({ vendor, socket }) => {
                           onChange={(e) => setDetail("date", e.target.value)}
                         />
                       </Form.Item>
+                    </div>
+                    <div className="form-group">
+                      <label>
+                        Time<sup>*</sup>
+                      </label>
+                      <TimePicker
+                        value={details.time}
+                        className="form-control"
+                        onChange={(time) => setDetail("time", time)}
+                        defaultValue={dayjs("12:08", format)}
+                        format={format}
+                      />
                     </div>
                   </div>
                 </figure>

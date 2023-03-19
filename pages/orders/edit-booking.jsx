@@ -10,6 +10,9 @@ import { isEmpty, omit } from "ramda";
 import { useRouter } from "next/router";
 import Link from "next/link";
 const { uuid } = require("uuidv4");
+import { TimePicker } from "antd";
+import dayjs from "dayjs";
+const format = "HH:mm";
 
 // import {  Upload } from 'antd';
 
@@ -19,24 +22,24 @@ const CreateBookingPage = ({ vendor, socket }) => {
   console.log("vendor", vendor);
   const dispatch = useDispatch();
   const [details, setDetails] = useState();
-  const { vendorId, bookingId } = router.query;    
+  const { vendorId, bookingId } = router.query;
   const [updatedVendor, setUpdatedVendor] = useState();
 
-  if(socket && ! updatedVendor){
-    socket.emit("GET_VENDOR", {id: vendor.id})
-    socket.on("RECEIVE_VENDOR", data => {
-      setUpdatedVendor(data)
-    })
+  if (socket && !updatedVendor) {
+    socket.emit("GET_VENDOR", { id: vendor.id });
+    socket.on("RECEIVE_VENDOR", (data) => {
+      setUpdatedVendor(data);
+    });
   }
-  
-   console.log("socketlives",socket)
-  if(socket && !details){
-    console.log("Getting booking", vendorId, bookingId)
-    socket.emit("GET_VENDOR_BOOKING", { vendorId, bookingId })
+
+  console.log("socketlives", socket);
+  if (socket && !details) {
+    console.log("Getting booking", vendorId, bookingId);
+    socket.emit("GET_VENDOR_BOOKING", { vendorId, bookingId });
     socket.on("RECEIVE_VENDOR_BOOKING", (data) => {
-      console.log("Receiving booking", data)
-      setDetails(data)
-    })
+      console.log("Receiving booking", data);
+      setDetails(data);
+    });
   }
   useEffect(() => {
     dispatch(toggleDrawerMenu(false));
@@ -94,65 +97,77 @@ const CreateBookingPage = ({ vendor, socket }) => {
                   <figcaption>General</figcaption>
                   <div className="ps-block__content">
                     <div className="form-group">
-                        <Select
-                          id="customer"
-                          placeholder="Select Customer"
-                          className="ps-ant-dropdown"
-                          listItemHeight={20}
-                          value={details?.customer?.name}
-                          onChange={(customerId) => {
-                            const customer = updatedVendor?.customers?.filter(
-                              (c) => c.id === customerId
-                            )[0];
-                            setDetail(
-                              "customer",
-                              omit(
-                                ["servicesBooked", "servicesCompleted"],
-                                customer
-                              )
-                            );
-                          }}
-                        >
-                          {updatedVendor?.customers?.map((c) => (
-                            <option key={c.id} value={c.id}>
-                              {c.name}
-                            </option>
-                          ))}
-                        </Select>
+                      <Select
+                        id="customer"
+                        placeholder="Select Customer"
+                        className="ps-ant-dropdown"
+                        listItemHeight={20}
+                        value={details?.customer?.name}
+                        onChange={(customerId) => {
+                          const customer = updatedVendor?.customers?.filter(
+                            (c) => c.id === customerId
+                          )[0];
+                          setDetail(
+                            "customer",
+                            omit(
+                              ["servicesBooked", "servicesCompleted"],
+                              customer
+                            )
+                          );
+                        }}
+                      >
+                        {updatedVendor?.customers?.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.name}
+                          </option>
+                        ))}
+                      </Select>
                     </div>
                     <div className="form-group">
-                        <Select
-                          id="service"
-                          placeholder="Select Service"
-                          className="ps-ant-dropdown"
-                          listItemHeight={20}
-                          value={details?.service?.name}
-                          onChange={(serviceId) => {
-                            const service = updatedVendor?.services?.filter(
-                              (c) => c.id === serviceId
-                            )[0];
-                            setDetail("service", service);
-                            //setDetail('price', service?.salePrice)
-                          }}
-                        >
-                          {updatedVendor?.services?.map((c) => (
-                            <option key={c.id} value={c.id}>
-                              {c.name}
-                            </option>
-                          ))}
-                        </Select>
+                      <Select
+                        id="service"
+                        placeholder="Select Service"
+                        className="ps-ant-dropdown"
+                        listItemHeight={20}
+                        value={details?.service?.name}
+                        onChange={(serviceId) => {
+                          const service = updatedVendor?.services?.filter(
+                            (c) => c.id === serviceId
+                          )[0];
+                          setDetail("service", service);
+                          //setDetail('price', service?.salePrice)
+                        }}
+                      >
+                        {updatedVendor?.services?.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.name}
+                          </option>
+                        ))}
+                      </Select>
                     </div>
                     <div className="form-group">
                       <label>
                         Date<sup>*</sup>
                       </label>
-                        <input
-                          className="form-control"
-                          type="date"
-                          placeholder="Select Date"
-                          value={details?.date}
-                          onChange={(e) => setDetail("date", e.target.value)}
-                        />
+                      <input
+                        className="form-control"
+                        type="date"
+                        placeholder="Select Date"
+                        value={details?.date}
+                        onChange={(e) => setDetail("date", e.target.value)}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>
+                        Time<sup>*</sup>
+                      </label>
+                      <TimePicker
+                        className="form-control"
+                        value={dayjs(details?.time, format)}
+                        onChange={(time) => setDetail("time", time)}
+                        defaultValue={dayjs("12:08", format)}
+                        format={format}
+                      />
                     </div>
                   </div>
                 </figure>
@@ -169,7 +184,6 @@ const CreateBookingPage = ({ vendor, socket }) => {
             </div>
           </div>
           <div className="ps-form__bottom">
-          
             <Link className="ps-btn ps-btn--black" href="/orders">
               Back
             </Link>
