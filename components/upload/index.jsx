@@ -55,11 +55,6 @@ const App = ({ onUploadComplete, existingFileList }) => {
       message.error("You can only upload JPG/PNG file!");
       setCanUpload(false);
     }
-    const isLt2M = file.size < 436342;
-    if (!isLt2M) {
-      message.error("Image must smaller than 2MB!");
-      setCanUpload(false);
-    }
     return false;
   };
 

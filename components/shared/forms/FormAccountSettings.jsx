@@ -98,9 +98,9 @@ const FormAccountSettings = ({vendor, socket}) => {
           <div className="form-group">
             <label>Address</label>
             <AutoComplete
-              value={details?.address}
-              onChange={(v) => setDetail("address", v)}
-              onSelect={(v) => setDetail("address", v)}
+              value={details?.address?.address}
+              onChange={(address) => setDetail("address", { address })}
+              onSelect={(address, coordinates) => setDetail("address", { address, coordinates })}
             />
           </div>
         </div>

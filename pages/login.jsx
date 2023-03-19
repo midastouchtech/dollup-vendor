@@ -4,6 +4,9 @@ import { toggleDrawerMenu } from "~/store/app/action";
 import styled from "styled-components";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
+import cookie from 'cookiejs';
+import { omit } from "ramda";
+
 
 const Container = styled.div`
   display: flex;
@@ -33,7 +36,10 @@ const Login = ({ vendor, socket }) => {
     setError('')
     socket.emit("VENDOR_LOGIN", {email, password})
     socket.on("VENDOR_LOGIN_SUCCESS", (vendor)=> {
-        Cookies.set('dollup_logged_in_vendor',JSON.stringify(vendor), { expires: 1 } )
+      console.log("found vendor", vendor)
+      console.log(Cookies)
+      console.log(Cookies.set)
+        cookie('dollup_logged_in_vendor',JSON.stringify(omit(["tracking","services", "customers", "bookings"], vendor)), 1 )
         router.push('/')
     })
     socket.on("VENDOR_LOGIN_ERROR", (err) => {

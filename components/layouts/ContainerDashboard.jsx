@@ -15,10 +15,8 @@ import { isEmpty, isNil } from 'ramda';
 const exists = i => !isNil(i) && !isEmpty(i);
 
 const ContainerDashboard = ({ children, title, socket, vendor }) => {
-    const router = useRouter();
     const dispatch = useDispatch();
     const cookieVendor = cookies.get("dollup_logged_in_vendor");
-
     if(cookieVendor && !exists(vendor)){
         dispatch(saveVendor(JSON.parse(cookieVendor)));
     }
