@@ -1,9 +1,9 @@
 import React from 'react';
 import DropdownAction from '~/components/elements/basic/DropdownAction';
 
-const TableCustomerItems = ({socket, customers}) => {
+const StylistsTable = ({socket, stylists}) => {
 
-    const tableItemsView = customers?.map((item, index) => {
+    const tableItemsView = stylists?.map((item, index) => {
         let badgeView;
 
         if (item.active) {
@@ -14,17 +14,14 @@ const TableCustomerItems = ({socket, customers}) => {
 
         return (
             <tr key={index}>
-                <td>{index}</td>
+                <td>{index+1}</td>
                 <td>
                     <strong>{item.name}</strong>
                 </td>
                 <td>{item.phoneNumber}</td>
-                <td>{item?.address?.split(',')[item?.address?.split(',').length -2]}</td>
-                <td>{item.balance ? `R${item.balance}` : 'R 0.00'}</td>
-                <td>{item?.servicesBooked?.length}</td>
-                <td>{badgeView}</td>
+                <td>{item.email}</td>
                 <td>
-                    <DropdownAction type="customers" id={item?.id} socket={socket}/>
+                    <DropdownAction type="stylists" id={item?.id} socket={socket}/>
                 </td>
             </tr>
         );
@@ -34,13 +31,10 @@ const TableCustomerItems = ({socket, customers}) => {
             <table className="table ps-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>#</th>
                         <th>Name</th>
                         <th>Phone Number</th>
-                        <th>City</th>
-                        <th>Balances</th>
-                        <th>Total orders</th>
-                        <th>Status</th>
+                        <th>Email</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -50,4 +44,4 @@ const TableCustomerItems = ({socket, customers}) => {
     );
 };
 
-export default TableCustomerItems;
+export default StylistsTable;

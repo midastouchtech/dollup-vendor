@@ -2,23 +2,6 @@ import React from 'react';
 import DropdownAction from '~/components/elements/basic/DropdownAction';
 
 const TableProjectItems = ({services, socket}) => {
-    const productItems = [
-        {
-            name: 'Herschel Leather Duffle Bag In Brown Color',
-            sku: 'AB123456789-1',
-            stock: 'true',
-            price: '£125.30',
-            date: '2019/11/06',
-            categories: [
-                {
-                    name: 'Bags',
-                },
-                {
-                    name: 'Clothing & Apparel',
-                },
-            ],
-        },
-    ];
     const tableItems = services?.map((item, index) => {
         let badgeView;
         if (item?.active) {
@@ -40,7 +23,7 @@ const TableProjectItems = ({services, socket}) => {
                 </td>
                 <td>
                     <p className="ps-item-categories">
-                        {item?.category}
+                        {item?.category?.name}
                         {/* {item?.categories.map((cat) => (
                             <a href="#" key={cat.name}>
                                 {cat.name}

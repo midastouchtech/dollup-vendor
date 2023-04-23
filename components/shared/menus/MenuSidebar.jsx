@@ -12,18 +12,28 @@ const MenuSidebar = () => {
         },
         {
             text: 'Service',
-            url: '/products',
+            url: '/services',
             icon: 'icon-database',
         },
         {
             text: 'Bookings',
-            url: '/orders',
+            url: '/bookings',
             icon: 'icon-bag2',
         },
         {
             text: 'Customers',
             url: '/customers',
             icon: 'icon-users2',
+        },
+        {
+            text: 'Stylists',
+            url: '/stylists',
+            icon: 'icon-users2',
+        },
+        {
+            text: 'Request',
+            url: '/categories/request-category',
+            icon: 'icon-cog',
         },
         {
             text: 'Settings',

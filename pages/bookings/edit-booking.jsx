@@ -13,6 +13,9 @@ const { uuid } = require("uuidv4");
 import { TimePicker } from "antd";
 import dayjs from "dayjs";
 const format = "HH:mm";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import moment from "moment";
 
 // import {  Upload } from 'antd';
 
@@ -26,7 +29,7 @@ const CreateBookingPage = ({ vendor, socket }) => {
   const [updatedVendor, setUpdatedVendor] = useState();
 
   if (socket && !updatedVendor) {
-    socket.emit("GET_VENDOR", { id: vendor.id });
+    socket.emit("GET_VENDOR", { id: vendor?.id });
     socket.on("RECEIVE_VENDOR", (data) => {
       setUpdatedVendor(data);
     });
@@ -35,7 +38,7 @@ const CreateBookingPage = ({ vendor, socket }) => {
   console.log("socketlives", socket);
   if (socket && !details) {
     console.log("Getting booking", vendorId, bookingId);
-    socket.emit("GET_VENDOR_BOOKING", { vendorId, bookingId });
+    socket.emit("GET_BOOKING", { vendorId, bookingId });
     socket.on("RECEIVE_VENDOR_BOOKING", (data) => {
       console.log("Receiving booking", data);
       setDetails(data);
@@ -63,16 +66,16 @@ const CreateBookingPage = ({ vendor, socket }) => {
           ...details,
         },
       });
-      socket.on("RECEIVE_UPDATE_VENDOR_BOOKING_SUCCESS", () => {
+      socket.on("RECEIVE_UPDATE_BOOKING_SUCCESS", () => {
         notification.success({
           key: details.name,
           message: "Success!",
           description: "Your new booking has been added to your store!",
         });
 
-        router.push("/orders");
+        router.push("/bookings");
       });
-      socket.on("RECEIVE_UPDATE_VENDOR_CUSTOMER_ERROR", () => {
+      socket.on("RECEIVE_UPDATE_CUSTOMER_ERROR", () => {
         notification.error({
           key: details.name,
           message: "Something went wrong.",
@@ -97,6 +100,7 @@ const CreateBookingPage = ({ vendor, socket }) => {
                   <figcaption>General</figcaption>
                   <div className="ps-block__content">
                     <div className="form-group">
+                      <label>Customer</label>
                       <Select
                         id="customer"
                         placeholder="Select Customer"
@@ -124,6 +128,35 @@ const CreateBookingPage = ({ vendor, socket }) => {
                       </Select>
                     </div>
                     <div className="form-group">
+                      <label>Stylist</label>
+                      <Select
+                        id="stylist"
+                        placeholder="Select Stylist"
+                        className="ps-ant-dropdown"
+                        listItemHeight={20}
+                        value={details?.stylist?.name}
+                        onChange={(stylistId) => {
+                          const stylist = updatedVendor?.stylists?.filter(
+                            (c) => c.id === stylistId
+                          )[0];
+                          setDetail(
+                            "stylist",
+                            omit(
+                              ["servicesBooked", "servicesCompleted"],
+                              stylist
+                            )
+                          );
+                        }}
+                      >
+                        {updatedVendor?.stylists?.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.name}
+                          </option>
+                        ))}
+                      </Select>
+                    </div>
+                    <div className="form-group">
+                      <label>Service</label>
                       <Select
                         id="service"
                         placeholder="Select Service"
@@ -147,26 +180,21 @@ const CreateBookingPage = ({ vendor, socket }) => {
                     </div>
                     <div className="form-group">
                       <label>
-                        Date<sup>*</sup>
+                        Date and Time<sup>*</sup>
                       </label>
-                      <input
+                      <DatePicker
+                        selected={
+                          details?.dateTime
+                            ? moment(details?.dateTime).toDate()
+                            : moment().toDate()
+                        }
+                        onChange={(time) => setDetail("dateTime", time)}
+                        timeInputLabel="Time:"
+                        dateFormat="MM/dd/yyyy h:mm aa"
+                        showTimeInput
+                        wrapperClassName="form-control"
                         className="form-control"
-                        type="date"
-                        placeholder="Select Date"
-                        value={details?.date}
-                        onChange={(e) => setDetail("date", e.target.value)}
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>
-                        Time<sup>*</sup>
-                      </label>
-                      <TimePicker
-                        className="form-control"
-                        value={dayjs(details?.time, format)}
-                        onChange={(time) => setDetail("time", time)}
-                        defaultValue={dayjs("12:08", format)}
-                        format={format}
+                        fixedHeight={true}
                       />
                     </div>
                   </div>
@@ -184,10 +212,10 @@ const CreateBookingPage = ({ vendor, socket }) => {
             </div>
           </div>
           <div className="ps-form__bottom">
-            <Link className="ps-btn ps-btn--black" href="/orders">
+            <Link className="ps-btn ps-btn--black" href="/bookings">
               Back
             </Link>
-            <Link className="ps-btn ps-btn--gray" href="/orders">
+            <Link className="ps-btn ps-btn--gray" href="/bookings">
               Cancel
             </Link>
             <button className="ps-btn" onClick={handleSubmit}>

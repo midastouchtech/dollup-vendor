@@ -13,7 +13,7 @@ const { uuid } = require("uuidv4");
 
 // import {  Upload } from 'antd';
 
-const CreateServicePage = ({ vendor, socket }) => {
+const CreateStylistPage = ({ vendor, socket }) => {
   const router = useRouter();
 
   console.log("vendor", vendor);
@@ -35,26 +35,28 @@ const CreateServicePage = ({ vendor, socket }) => {
     notification.destroy(details.name);
     console.log(details);
     if (socket && !isEmpty(details)) {
-      socket.emit("CREATE_VENDOR_CUSTOMER", {
-        associatedVendors: [vendor],
+      socket.emit("CREATE_STYLIST", {
+        vendor,
         active: true,
         dateAdded: new Date(),
+        servicesBooked: [],
+        servicesCompleted: [],
         id: uuid(),
         ...details,
       });
-      socket.on("RECEIVE_CREATE_VENDOR_CUSTOMER_SUCCESS", () => {
+      socket.on("RECEIVE_CREATE_STYLIST_SUCCESS", () => {
         notification.success({
           key: details.name,
           message: "Success!",
-          description: "Your new customer has been added to your store!",
+          description: "Your new stylist has been added to your store!",
         });
-        router.push("/customers");
+        router.push("/stylists");
       });
-      socket.on("RECEIVE_CREATE_VENDOR_CUSTOMER_ERROR", () => {
+      socket.on("RECEIVE_CREATE_STYLIST_ERROR", () => {
         notification.error({
           key: details.name,
           message: "Something went wrong.",
-          description: "Your new Service could not be added to your store.",
+          description: "Your new stylist could not be added to your store.",
         });
       });
     }
@@ -63,8 +65,8 @@ const CreateServicePage = ({ vendor, socket }) => {
   return (
     <ContainerDashboard title="Create new product">
       <HeaderDashboard
-        title="Create Customer"
-        description="Dollup Create New Customer "
+        title="Create Stylist"
+        description="Dollup Create New Stylist "
       />
       <section className="ps-new-item">
         <Form className="ps-form ps-form--new-product">
@@ -76,21 +78,21 @@ const CreateServicePage = ({ vendor, socket }) => {
                   <div className="ps-block__content">
                     <div className="form-group">
                       <label>
-                        Customer Name<sup>*</sup>
+                        Stylist Name<sup>*</sup>
                       </label>
                       <Form.Item
-                        name="customerName"
+                        name="stylistName"
                         rules={[
                           {
                             required: true,
-                            message: "Please input customer name",
+                            message: "Please input stylist name",
                           },
                         ]}
                       >
                         <input
                           className="form-control"
                           type="text"
-                          placeholder="Enter customer name..."
+                          placeholder="Enter stylist name..."
                           value={details.name}
                           onChange={(e) => setDetail("name", e.target.value)}
                         />
@@ -105,7 +107,7 @@ const CreateServicePage = ({ vendor, socket }) => {
                         rules={[
                           {
                             required: true,
-                            message: "Please input customer phone number",
+                            message: "Please input stylist phone number",
                           },
                         ]}
                       >
@@ -129,7 +131,7 @@ const CreateServicePage = ({ vendor, socket }) => {
                         rules={[
                           {
                             required: true,
-                            message: "Please input customer phone number",
+                            message: "Please input stylist phone number",
                           },
                         ]}
                       >
@@ -141,59 +143,6 @@ const CreateServicePage = ({ vendor, socket }) => {
                           onChange={(e) => setDetail("email", e.target.value)}
                         />
                       </Form.Item>
-                    </div>
-                    <div className="form-group">
-                      <label>
-                        Password<sup>*</sup>
-                      </label>
-                      <Form.Item
-                        name="password"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please input customer phone number",
-                          },
-                        ]}
-                      >
-                        <input
-                          className="form-control"
-                          type="text"
-                          placeholder="Enter email..."
-                          value={details.password}
-                          onChange={(e) =>
-                            setDetail("password", e.target.value)
-                          }
-                        />
-                      </Form.Item>
-                    </div>
-
-                    <div className="form-group">
-                      <label>
-                        Address<sup>*</sup>
-                      </label>
-                      <AutoComplete
-                        value={details?.address}
-                        onChange={(v) => setDetail("address", v)}
-                        onSelect={(v, l) => {
-                          setDetails({
-                            ...details,
-                            ["address"]: v,
-                            ["location"]: { coordinates: l }
-                          });
-                        }}
-                      />
-                    </div>
-                  </div>
-                </figure>
-              </div>
-              <div className="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-                <figure className="ps-block--form-box">
-                  <figcaption>Profile Image</figcaption>
-                  <div className="ps-block__content">
-                    <div className="form-group">
-                      <Upload
-                        onUploadComplete={(url) => setDetail("avatar", url)}
-                      />
                     </div>
                   </div>
                 </figure>
@@ -214,4 +163,4 @@ const CreateServicePage = ({ vendor, socket }) => {
     </ContainerDashboard>
   );
 };
-export default connect((state) => state.app)(CreateServicePage);
+export default connect((state) => state.app)(CreateStylistPage);

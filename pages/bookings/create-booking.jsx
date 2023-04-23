@@ -9,12 +9,8 @@ import { Select, Form, notification } from "antd";
 import { isEmpty, omit } from "ramda";
 import { useRouter } from "next/router";
 const { uuid } = require("uuidv4");
-import { TimePicker } from "antd";
-import dayjs from 'dayjs';
-
-const format = 'HH:mm';
-
-// import {  Upload } from 'antd';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const CreateBookingPage = ({ vendor, socket }) => {
   const router = useRouter();
@@ -23,15 +19,34 @@ const CreateBookingPage = ({ vendor, socket }) => {
   const dispatch = useDispatch();
   const [details, setDetails] = useState({ isPaid: false, price: 0 });
   const [updatedVendor, setUpdatedVendor] = useState();
+  const [customers, setCustomers] = useState([]);
+  const [services, setServices] = useState([]);
+  const [stylists, setStylists] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState();
+  const [selectedService, setSelectedService] = useState();
+  const [selectedStylist, setSelectedStylist] = useState();
 
-  if (socket && !updatedVendor) {
-    socket.emit("GET_VENDOR", { id: vendor.id });
-    socket.on("RECEIVE_VENDOR", (data) => {
-      setUpdatedVendor(data);
-    });
-  }
   useEffect(() => {
     dispatch(toggleDrawerMenu(false));
+    if (
+      socket &&
+      isEmpty(customers) &&
+      isEmpty(services) &&
+      isEmpty(stylists)
+    ) {
+      socket.emit("GET_VENDOR_CUSTOMERS", { id: vendor.id });
+      socket.emit("GET_VENDOR_STYLISTS", { id: vendor.id });
+      socket.emit("GET_VENDOR_SERVICES", { id: vendor.id });
+      socket.on("RECEIVE_VENDOR_CUSTOMERS", (data) => {
+        setCustomers(data);
+      });
+      socket.on("RECEIVE_VENDOR_STYLISTS", (data) => {
+        setStylists(data);
+      });
+      socket.on("RECEIVE_VENDOR_SERVICES", (data) => {
+        setServices(data);
+      });
+    }
   }, []);
 
   const setDetail = (key, val) => {
@@ -39,33 +54,44 @@ const CreateBookingPage = ({ vendor, socket }) => {
   };
 
   const handleSubmit = () => {
+    console.log("submitting")
     const id = uuid();
     socket.onAny((event, ...args) => {
       console.log(event, args);
     });
     notification.destroy(id);
-    console.log(details);
+    console.log("saving...",{
+      vendor: vendor,
+      customer: selectedCustomer,
+      service: selectedService,
+      stylist: selectedStylist,
+      isComplete: false,
+      isCancelled: false,
+      dateAdded: new Date(),
+      id: id,
+      ...details,
+    });
     if (socket && !isEmpty(details)) {
-      socket.emit("CREATE_VENDOR_BOOKING", {
-        vendor: { _id: vendor._id },
-        booking: {
-          isComplete: false,
-          isCancelled: false,
-          dateAdded: new Date(),
-          id: id,
-          ...details,
-        },
+      socket.emit("CREATE_BOOKING", {
+        vendor: vendor,
+        customer: selectedCustomer,
+        service: selectedService,
+        stylist: selectedStylist,
+        isComplete: false,
+        isCancelled: false,
+        dateAdded: new Date(),
+        id: id,
+        ...details,
       });
-      socket.on("RECEIVE_CREATE_VENDOR_BOOKING_SUCCESS", () => {
+      socket.on("RECEIVE_CREATE_BOOKING_SUCCESS", () => {
         notification.success({
           key: details.name,
           message: "Success!",
           description: "Your new booking has been added to your store!",
         });
-
-        router.push("/orders");
+       router.push("/bookings");
       });
-      socket.on("RECEIVE_CREATE_VENDOR_CUSTOMER_ERROR", () => {
+      socket.on("RECEIVE_CREATE_BOOKING_ERROR", () => {
         notification.error({
           key: details.name,
           message: "Something went wrong.",
@@ -74,7 +100,7 @@ const CreateBookingPage = ({ vendor, socket }) => {
       });
     }
   };
-  console.log(details);
+  console.log('selectedService', selectedService);
   return (
     <ContainerDashboard title="Create new product">
       <HeaderDashboard
@@ -90,106 +116,88 @@ const CreateBookingPage = ({ vendor, socket }) => {
                   <figcaption>General</figcaption>
                   <div className="ps-block__content">
                     <div className="form-group">
-                      <Form.Item
-                        name="customer"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please select a customer",
-                          },
-                        ]}
-                      >
+                      
+                        <label>Customer</label>
                         <Select
                           id="customer"
                           placeholder="Select Customer"
                           className="ps-ant-dropdown"
                           listItemHeight={20}
-                          value={details?.customer?.name}
+                          value={selectedCustomer?.name}
                           onChange={(customerId) => {
-                            const customer = updatedVendor?.customers?.filter(
+                            const customer = customers?.filter(
                               (c) => c.id === customerId
                             )[0];
-                            setDetail(
-                              "customer",
-                              omit(
-                                ["servicesBooked", "servicesCompleted"],
-                                customer
-                              )
-                            );
+                            setSelectedCustomer(customer);
                           }}
                         >
-                          {updatedVendor?.customers?.map((c) => (
+                          {customers?.map((c) => (
                             <option key={c.id} value={c.id}>
                               {c.name}
                             </option>
                           ))}
                         </Select>
-                      </Form.Item>
                     </div>
                     <div className="form-group">
-                      <Form.Item
-                        name="service"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please select a service",
-                          },
-                        ]}
-                      >
+                     
+                        <label>Service</label>
                         <Select
                           id="service"
                           placeholder="Select Service"
                           className="ps-ant-dropdown"
                           listItemHeight={20}
-                          value={details?.service?.name}
+                          value={selectedService?.name}
                           onChange={(serviceId) => {
-                            const service = updatedVendor?.services?.filter(
-                              (c) => c.id === serviceId
+                            const service = services?.filter(
+                              (c) => c._id === serviceId
                             )[0];
-                            setDetail("service", service);
-                            //setDetail('price', service?.salePrice)
+                            console.log("selecting  service", service)
+                            setSelectedService(service);
                           }}
                         >
-                          {updatedVendor?.services?.map((c) => (
+                          {services?.map((c) => (
+                            <option key={c.id} value={c._id}>
+                              {c.name}
+                            </option>
+                          ))}
+                        </Select>
+                    </div>
+                    <div className="form-group">
+                      
+                        <label>Stylist</label>
+                        <Select
+                          id="stylist"
+                          placeholder="Select Customer"
+                          className="ps-ant-dropdown"
+                          listItemHeight={20}
+                          value={details?.stylist?.name}
+                          onChange={(stylistId) => {
+                            const stylist = stylists?.filter(
+                              (c) => c.id === stylistId
+                            )[0];
+                            setSelectedStylist(stylist);
+                          }}
+                        >
+                          {stylists?.map((c) => (
                             <option key={c.id} value={c.id}>
                               {c.name}
                             </option>
                           ))}
                         </Select>
-                      </Form.Item>
                     </div>
                     <div className="form-group">
                       <label>
                         Date<sup>*</sup>
                       </label>
-                      <Form.Item
-                        name="date"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please input date",
-                          },
-                        ]}
-                      >
-                        <input
-                          className="form-control"
-                          type="date"
-                          placeholder="Select Date"
-                          value={details.date}
-                          onChange={(e) => setDetail("date", e.target.value)}
-                        />
-                      </Form.Item>
-                    </div>
-                    <div className="form-group">
-                      <label>
-                        Time<sup>*</sup>
-                      </label>
-                      <TimePicker
-                        value={details.time}
+                      <DatePicker
+                        selected={details?.dateTime}
+                        onChange={(time) => setDetail("dateTime", time)}
+                        timeInputLabel="Time:"
+                        dateFormat="MM/dd/yyyy h:mm aa"
+                        showTimeInput
+                        wrapperClassName="form-control"
                         className="form-control"
-                        onChange={(time) => setDetail("time", time)}
-                        defaultValue={dayjs("12:08", format)}
-                        format={format}
+                        fixedHeight={true}
                       />
                     </div>
                   </div>
@@ -200,7 +208,7 @@ const CreateBookingPage = ({ vendor, socket }) => {
                 <figure className="ps-block--form-box">
                   <figcaption>Price</figcaption>
                   <div className="ps-block__content">
-                    <h2>R{details?.service?.salePrice ?? 0}</h2>
+                    <h2>R{selectedService?.salePrice ?? 0}</h2>
                   </div>
                 </figure>
               </div>

@@ -45,21 +45,21 @@ const TableOrdersItems = ({socket, bookings }) => {
         }
         console.log("table bookings", bookings)
         return (
-            <tr key={item.id}>
+            <tr key={item?.id}>
                 <td>
-                    <strong> {item.date}</strong>
+                    <strong> {item?.date}</strong>
                 </td>
                 <td>
-                    <Link href="/orders/order-detail">
+                    <Link href="/bookings/order-detail">
                         <p>
-                            <strong>{item.customer.name}</strong>
+                            <strong>{item?.customer?.name}</strong>
                         </p>
                     </Link>
                 </td>
                 <td>
-                    <Link href="/orders/order-detail">
+                    <Link href="/bookings/order-detail">
                         <p>
-                            <strong>{item.service.name}</strong>
+                            <strong>{item?.service?.name}</strong>
                         </p>
                     </Link>
                 </td>

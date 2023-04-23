@@ -5,11 +5,11 @@ import HeaderDashboard from "~/components/shared/headers/HeaderDashboard";
 import { connect, useDispatch } from "react-redux";
 import { toggleDrawerMenu } from "~/store/app/action";
 import categories from "~/public/data/categories.json";
-import { Select, Form, notification } from "antd";
-import { isEmpty } from "ramda";
+import { Button, Modal,  Select, Form, notification } from "antd";
+import { assoc, isEmpty, omit } from "ramda";
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic';
 
 // const Select = dynamic(import('antd/es/select'), { ssr: false }) 
 // const Form = dynamic(import('antd/es/form'), { ssr: false })
@@ -39,20 +39,59 @@ const EditServicePage = ({ vendor, socket }) => {
     setDetails({ ...details, [key]: val });
   };
 
+  const showModal = () => {
+    if(!details?.duration){
+      setDetails({
+        ...details,
+        duration: { hours: 0, minutes: 0 },
+        isModalOpen:true
+      });
+    }
+    else{
+      setDetails({
+        ...details,
+        isModalOpen:true
+      });
+    }
+  };
+
+  const handleOk = () => {
+    setDetails({
+      ...details,
+      isModalOpen:false
+    });
+  };
+  
+  const handleCancel = () => {
+    setDetails({
+      ...details,
+      isModalOpen:false
+    });
+  };
+
+  const setDurationHours = (hours) =>
+    setDetails({ ...details, duration: { ...details?.duration, hours } });
+  const setDurationMinutes = (minutes) =>
+    setDetails({ ...details, duration: { ...details?.duration, minutes } });
+
+
   const handleSubmit = () => {
+    console.log("submitting details vendor:", vendor)
     notification.destroy()
     console.log(details)
+    const detailsWithDuration = details?.duration ? details : assoc("duration", {hours:0, minutes:0}, details);
+
     if (socket && !isEmpty(details)) {
-      socket.emit("UPDATE_VENDOR_SERVICE", { vendor, service: details });
-      socket.on("RECEIVE_UPDATE_VENDOR_SERVICE_SUCCESS", () => {
+      socket.emit("UPDATE_VENDOR_SERVICE", { vendor, service: omit(["isModalOpen"], detailsWithDuration) });
+      socket.on("RECEIVE_UPDATE_SERVICE_SUCCESS", () => {
         notification.success({
           message: 'Success!',
           description:
             'Your service info has been updated!',
         });
-        router.push('/products')
+        router.push('/services')
       });
-      socket.on("RECEIVE_CREATE_VENDOR_SERVICE_ERROR", () => {
+      socket.on("RECEIVE_CREATE_SERVICE_ERROR", () => {
         notification.error({
           message: 'Something went wrong.',
           description:
@@ -68,6 +107,45 @@ const EditServicePage = ({ vendor, socket }) => {
         title="Create Service"
         description="Dollup Create New Service "
       />
+      <Modal
+        title="Service duration"
+        open={details?.isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <div>
+          <p>
+            Please enter the number of hours and minutes this service is going
+            to take to perform. 
+          </p>
+          <div className="row">
+            <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
+              <div className="form-group">
+                <label>Hours</label>
+                <input
+                  className="form-control"
+                  type="number"
+                  placeholder="Enter Hours..."
+                  value={details?.duration?.hours}
+                  onChange={(e) => setDurationHours(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
+              <div className="form-group">
+                <label>Minutes</label>
+                <input
+                  className="form-control"
+                  type="number"
+                  placeholder="Enter Minutes..."
+                  value={details?.duration?.minutes}
+                  onChange={(e) => setDurationMinutes(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </Modal>
       <section className="ps-new-item">
         <Form className="ps-form ps-form--new-product">
           <div className="ps-form__content">
@@ -128,6 +206,19 @@ const EditServicePage = ({ vendor, socket }) => {
                             setDetail("salePrice", e.target.value)
                           }
                         />
+                    </div>
+                    <div className="form-group">
+                      <label>
+                        Duration
+                      </label>
+                      <br />
+                      <Button
+                        onClick={() => {                          
+                          showModal();
+                        }}
+                      >
+                        Select Duration
+                      </Button>
                     </div>
                     <div className="form-group">
                       <label>
@@ -195,10 +286,10 @@ const EditServicePage = ({ vendor, socket }) => {
             </div>
           </div>
           <div className="ps-form__bottom">
-            <Link  href="/products">
+            <Link  href="/services">
               <button className="ps-btn ps-btn--black">Back</button>
             </Link>
-            <Link  href="/products">
+            <Link  href="/services">
               <button className="ps-btn ps-btn--gray">Cancel</button>
             </Link>
             <button className="ps-btn" onClick={handleSubmit}>Submit</button>

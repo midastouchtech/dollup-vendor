@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import ContainerDefault from '~/components/layouts/ContainerDefault';
-import ModuleOrderShippingInformation from '~/components/partials/orders/ModuleOrderShippingInformation';
-import ModuleOrderBillingInformation from '~/components/partials/orders/ModuleOrderBillingInformation';
+import ModuleOrderShippingInformation from '~/components/partials/bookings/ModuleOrderShippingInformation';
+import ModuleOrderBillingInformation from '~/components/partials/bookings/ModuleOrderBillingInformation';
 import HeaderDashboard from '~/components/shared/headers/HeaderDashboard';
 import { connect, useDispatch } from 'react-redux';
 import { toggleDrawerMenu } from '~/store/app/action';

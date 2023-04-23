@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import ContainerDefault from "~/components/layouts/ContainerDefault";
+import ContainerDashboard from "~/components/layouts/ContainerDashboard";
 import Upload from "~/components/upload";
 import HeaderDashboard from "~/components/shared/headers/HeaderDashboard";
 import { connect, useDispatch } from "react-redux";
@@ -13,20 +13,17 @@ import AutoComplete from "~/components/autocomplete";
 
 // import {  Upload } from 'antd';
 
-const CreateServicePage = ({ vendor, socket }) => {
+const CreateStylistPage = ({ vendor, socket }) => {
   const router = useRouter();
-
-  console.log("vendor", vendor)
   const dispatch = useDispatch();
   const [details, setDetails] = useState();
-  const { vendorId, customerId } = router.query;    
+  const { vendorId, stylistId } = router.query;    
  
-   console.log("socketlives",socket)
   if(socket && !details){
-    console.log("Getting customer", vendorId, customerId)
-    socket.emit("GET_VENDOR_CUSTOMER", { vendorId, customerId })
-    socket.on("RECEIVE_VENDOR_CUSTOMER", (data) => {
-      console.log("Receiving customer", data)
+    console.log("Getting stylist", vendorId, stylistId)
+    socket.emit("GET_STYLIST", { vendorId, stylistId })
+    socket.on("RECEIVE_VENDOR_STYLIST", (data) => {
+      console.log("Receiving stylist", data)
       setDetails(data)
     })
   }
@@ -46,22 +43,22 @@ const CreateServicePage = ({ vendor, socket }) => {
     notification.destroy(details.name)
     console.log(details)
     if (socket && !isEmpty(details)) {
-      socket.emit("UPDATE_VENDOR_CUSTOMER", { vendor, customer: {
+      socket.emit("UPDATE_STYLIST", { vendor, stylist: {
         ...details
       } });
       
     }
-    socket.on("RECEIVE_UPDATE_CUSTOMER_SUCCESS", () => {
+    socket.on("RECEIVE_UPDATE_STYLIST_SUCCESS", () => {
       notification.success({
         key: details.name,
         message: 'Success!',
         description:
-          'Your new customer has been added to your store!',
+          'Your new stylist has been added to your store!',
       });
-      router.push('/customers')
-      console.log("pushed customers")
+      router.push('/stylists')
+      console.log("pushed stylists")
     });
-    socket.on("RECEIVE_UPDATE_CUSTOMER_ERROR", () => {
+    socket.on("RECEIVE_UPDATE_STYLIST_ERROR", () => {
       notification.error({
         key: details.name,
         message: 'Something went wrong.',
@@ -73,10 +70,10 @@ const CreateServicePage = ({ vendor, socket }) => {
 
   console.log("details", details)
   return (
-    <ContainerDefault title="Create new product">
+    <ContainerDashboard title="Create new stylist">
       <HeaderDashboard
-        title="Create Customer"
-        description="Dollup Create New Customer "
+        title="Create Stylist"
+        description="Dollup Create New Stylist "
       />
       <section className="ps-new-item">
         <Form className="ps-form ps-form--new-product">
@@ -88,12 +85,12 @@ const CreateServicePage = ({ vendor, socket }) => {
                   <div className="ps-block__content">
                     <div className="form-group">
                       <label>
-                        Customer Name<sup>*</sup>
+                        Stylist Name<sup>*</sup>
                       </label>
                         <input
                           className="form-control"
                           type="text"
-                          placeholder="Enter customer name..."
+                          placeholder="Enter stylist name..."
                           value={details?.name}
                           onChange={(e) => setDetail("name", e.target.value)}
                         />
@@ -122,58 +119,14 @@ const CreateServicePage = ({ vendor, socket }) => {
                           onChange={(e) => setDetail("email", e.target.value)}
                         />
                     </div>
-                    <div className="form-group">
-                      <label>
-                        Password<sup>*</sup>
-                      </label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          placeholder="Enter email..."
-                          value={details?.password}
-                          onChange={(e) =>
-                            setDetail("password", e.target.value)
-                          }
-                        />
-                    </div>
-
-                    <div className="form-group">
-                      <label>
-                        Address<sup>*</sup>
-                      </label>
-                      <AutoComplete
-                        value={details?.address}
-                        onChange={(v) => setDetail("address", v)}
-                        onSelect={(v, l) => {
-                          setDetails({
-                            ...details,
-                            ["address"]: v,
-                            ["location"]: { coordinates: l }
-                          });
-                        }}
-                      />
-                    </div>
                   </div>
                 </figure>
               </div>
-              <div className="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-                <figure className="ps-block--form-box">
-                  <figcaption>Profile Image</figcaption>
-                  <div className="ps-block__content">
-                    <div className="form-group">                      
-                        <Upload
-                          onUploadComplete={(url) =>
-                            setDetail("avatar", url)
-                          }
-                        />
-                    </div>
-                  </div>
-                </figure>
-              </div>
+              
             </div>
           </div>
           <div className="ps-form__bottom">
-            <Link className="ps-btn ps-btn--black" href="/customers">
+            <Link className="ps-btn ps-btn--black" href="/stylists">
               Back
             </Link>
             <button className="ps-btn ps-btn--gray">Cancel</button>
@@ -181,7 +134,7 @@ const CreateServicePage = ({ vendor, socket }) => {
           </div>
         </Form>
       </section>
-    </ContainerDefault>
+    </ContainerDashboard>
   );
 };
-export default connect((state) => state.app)(CreateServicePage);
+export default connect((state) => state.app)(CreateStylistPage);

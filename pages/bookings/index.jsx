@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import ContainerDashboard from "~/components/layouts/ContainerDashboard";
 import TableOrdersItems from "~/components/shared/tables/TableOrdersItems";
 import Pagination from "~/components/elements/basic/Pagination";
@@ -25,6 +25,13 @@ const OrdersPage = ({ vendor, socket }) => {
 
   useEffect(() => {
     dispatch(toggleDrawerMenu(false));
+    if (!bookings && socket && vendor) {
+      socket.emit("GET_VENDOR_BOOKINGS", { id: vendor.id });
+      socket.on("RECEIVE_VENDOR_BOOKINGS", (data) => {
+        setBookings(data);
+        setOriginalBookings(data);
+      });
+    }
   }, []);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,22 +46,18 @@ const OrdersPage = ({ vendor, socket }) => {
     setIsModalOpen(false);
   };
 
-  console.log(bookings, socket, vendor);
-  if (!bookings && socket && vendor) {
-    socket.emit("GET_VENDOR", { id: vendor.id });
-    socket.on("RECEIVE_VENDOR", (data) => {
-      setBookings(data.bookings);
-      setOriginalBookings(data.bookings);
-    });
-  }
+  console.log("bookings", bookings)
+  
 
   const events = bookings?.map((b) => ({
     id: b?.id,
     title: b?.customer?.name,
-    start: b?.date,
-    end: b?.date,
-    allDay: true,
-    service: b?.service.name,
+    start: moment(b?.dateTime).toDate(),
+    time: moment(b?.dateTime)?.format("HH:mm"),
+    end: moment(b?.dateTime).toDate(),
+    allDay: false,
+    service: b?.service?.name,
+    stylist: b?.stylist?.name,
     customer: b?.customer?.name,
     price: b?.service?.salePrice,
   }));
@@ -64,7 +67,6 @@ const OrdersPage = ({ vendor, socket }) => {
     showModal();
   }, []);
 
-  console.log("selected event", selectedEvent);
   return (
     <ContainerDashboard>
       <HeaderDashboard
@@ -89,10 +91,15 @@ const OrdersPage = ({ vendor, socket }) => {
           <Button key="back" onClick={handleCancel}>
             Close
           </Button>,
-          <Button key="edit" type="primary" onClick={() =>
-            router.push(
-              `/orders/edit-booking/?vendorId=${vendor?.id}&bookingId=${selectedEvent.id}`
-            )}>
+          <Button
+            key="edit"
+            type="primary"
+            onClick={() =>
+              router.push(
+                `/bookings/edit-booking/?vendorId=${vendor?.id}&bookingId=${selectedEvent.id}`
+              )
+            }
+          >
             Edit
           </Button>,
         ]}
@@ -106,7 +113,17 @@ const OrdersPage = ({ vendor, socket }) => {
           autoComplete="off"
         >
           <div className="row">
-            <div className="col-sm-12">
+            <div className="col-sm-6">
+              <div className="form-group">
+                <label>Price</label>
+                <input
+                  className="form-control"
+                  value={selectedEvent.price}
+                  disabled
+                />
+              </div>
+            </div>
+            <div className="col-sm-6">
               <div className="form-group">
                 <label>Customer</label>
                 <input
@@ -117,6 +134,30 @@ const OrdersPage = ({ vendor, socket }) => {
               </div>
             </div>
           </div>
+
+          <div className="row">
+            <div className="col-sm-6">
+              <div className="form-group">
+                <label>Date</label>
+                <input
+                  className="form-control"
+                  value={moment(selectedEvent.start).format("DD MMM YYYY")}
+                  disabled
+                />
+              </div>
+            </div>
+            <div className="col-sm-6">
+              <div className="form-group">
+                <label>Time</label>
+                <input
+                  className="form-control"
+                  value={selectedEvent.time}
+                  disabled
+                />
+              </div>
+            </div>
+          </div>
+
 
           <div className="row">
             <div className="col-sm-12">
@@ -134,23 +175,10 @@ const OrdersPage = ({ vendor, socket }) => {
           <div className="row">
             <div className="col-sm-12">
               <div className="form-group">
-                <label>Date</label>
+                <label>Stylist</label>
                 <input
                   className="form-control"
-                  value={moment(selectedEvent.start).format("DD MMM YYYY")}
-                  disabled
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="row">
-            <div className="col-sm-12">
-              <div className="form-group">
-                <label>Price</label>
-                <input
-                  className="form-control"
-                  value={selectedEvent.price}
+                  value={selectedEvent.stylist}
                   disabled
                 />
               </div>
@@ -191,7 +219,7 @@ const OrdersPage = ({ vendor, socket }) => {
             </form>
           </div>
           <div className="ps-section__actions">
-            <Link href="orders/create-booking">
+            <Link href="bookings/create-booking">
               <p className="ps-btn success">
                 <i className="icon icon-plus mr-2"></i>New Booking
               </p>

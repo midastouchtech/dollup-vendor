@@ -42,7 +42,6 @@ const ContainerDashboard = ({ children, title, socket, vendor }) => {
                     <div className="ps-sidebar">
                         <div className="ps-sidebar__top">
                             <WidgetUserWelcome />
-                            <WidgetEarningSidebar />
                         </div>
                         <div className="ps-sidebar__content">
                             <div className="ps-sidebar__center">
