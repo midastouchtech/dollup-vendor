@@ -19,7 +19,7 @@ const FormAccountSettings = ({ vendor, socket }) => {
   const [updatedVendor, setUpdatedVendor] = React.useState(false);
 
   if (socket && !updatedVendor) {
-    socket.emit("GET_VENDOR", { id: vendor.id });
+    socket.emit("GET_VENDOR", { id: vendor?.id });
     socket.on("RECEIVE_VENDOR", (data) => {
       setDetails(data);
       setUpdatedVendor(true);
