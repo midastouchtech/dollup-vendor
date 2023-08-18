@@ -26,7 +26,7 @@ function centerAspectCrop(mediaWidth, mediaHeight, aspect) {
 }
 
 export default function ImgUploadWithCropper(props) {
-  if (typeof window === "undefined") {
+  if (typeof window !== "undefined") {
     useHolderjs();
   }
   const [imgSrc, setImgSrc] = useState("");
