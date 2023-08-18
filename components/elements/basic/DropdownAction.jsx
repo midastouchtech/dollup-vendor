@@ -140,9 +140,7 @@ const DropdownAction = ({ id, socket, vendor, type }) => {
           <Menu.Item
             key={0}
             onClick={() =>
-              router.push(
-                `/customers/edit-customer/?vendorId=${vendor?.id}&customerId=${id}`
-              )
+              router.push(`/customers/edit-customer/?customerId=${id}`)
             }
           >
             <>
