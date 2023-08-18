@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import ContainerDashboard from "~/components/layouts/ContainerDashboard";
-import Upload from "~/components/upload";
 import HeaderDashboard from "~/components/shared/headers/HeaderDashboard";
 import { connect, useDispatch } from "react-redux";
 import { toggleDrawerMenu } from "~/store/app/action";
-import categories from "~/public/data/categories.json";
 import { Select, Form, notification } from "antd";
 import { isEmpty, omit } from "ramda";
 import { useRouter } from "next/router";
@@ -18,7 +16,6 @@ const CreateBookingPage = ({ vendor, socket }) => {
   console.log("vendor", vendor);
   const dispatch = useDispatch();
   const [details, setDetails] = useState({ isPaid: false, price: 0 });
-  const [updatedVendor, setUpdatedVendor] = useState();
   const [customers, setCustomers] = useState([]);
   const [services, setServices] = useState([]);
   const [stylists, setStylists] = useState([]);
@@ -54,23 +51,8 @@ const CreateBookingPage = ({ vendor, socket }) => {
   };
 
   const handleSubmit = () => {
-    console.log("submitting")
     const id = uuid();
-    socket.onAny((event, ...args) => {
-      console.log(event, args);
-    });
     notification.destroy(id);
-    console.log("saving...",{
-      vendor: vendor,
-      customer: selectedCustomer,
-      service: selectedService,
-      stylist: selectedStylist,
-      isComplete: false,
-      isCancelled: false,
-      dateAdded: new Date(),
-      id: id,
-      ...details,
-    });
     if (socket && !isEmpty(details)) {
       socket.emit("CREATE_BOOKING", {
         vendor: vendor,
@@ -89,18 +71,17 @@ const CreateBookingPage = ({ vendor, socket }) => {
           message: "Success!",
           description: "Your new booking has been added to your store!",
         });
-       router.push("/bookings");
+        router.push("/bookings");
       });
       socket.on("RECEIVE_CREATE_BOOKING_ERROR", () => {
         notification.error({
           key: details.name,
           message: "Something went wrong.",
-          description: "Your new Service could not be added to your store.",
+          description: "Your new booking could not be created.",
         });
       });
     }
   };
-  console.log('selectedService', selectedService);
   return (
     <ContainerDashboard title="Create new product">
       <HeaderDashboard
@@ -110,13 +91,50 @@ const CreateBookingPage = ({ vendor, socket }) => {
       <section className="ps-new-item">
         <Form className="ps-form ps-form--new-product">
           <div className="ps-form__content">
-            <div className="row">
-              <div className="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+            <div className="row d-flex justify-content-center">
+              <div className="col-md-8 col-sm-12">
                 <figure className="ps-block--form-box">
                   <figcaption>General</figcaption>
                   <div className="ps-block__content">
                     <div className="form-group">
-                      
+                      <label>
+                        Booking Type
+                        <sup>*</sup>
+                      </label>
+                      <Select
+                        id="type"
+                        placeholder="Select Booking Type"
+                        className="ps-ant-dropdown"
+                        listItemHeight={20}
+                        onChange={(val) => {
+                          setDetail("type", val);
+                          setSelectedCustomer({
+                            ...selectedCustomer,
+                            registered: false,
+                            id: uuid(),
+                            associatedVendors: [
+                              omit(
+                                [
+                                  "services",
+                                  "stylists",
+                                  "hash",
+                                  "password",
+                                  "fullName",
+                                  "tracking",
+                                  "bannerImages",
+                                ],
+                                vendor
+                              ),
+                            ],
+                          });
+                        }}
+                      >
+                        <option value="walkin">Walk In</option>
+                        <option value="online">Online</option>
+                      </Select>
+                    </div>
+                    {details.type === "online" && (
+                      <div className="form-group">
                         <label>Customer</label>
                         <Select
                           id="customer"
@@ -128,7 +146,13 @@ const CreateBookingPage = ({ vendor, socket }) => {
                             const customer = customers?.filter(
                               (c) => c.id === customerId
                             )[0];
-                            setSelectedCustomer(customer);
+                            setSelectedCustomer({
+                              id: customerId,
+                              name: customer.name,
+                              email: customer.email,
+                              phoneNumber: customer.phoneNumber,
+                              registered: true,
+                            });
                           }}
                         >
                           {customers?.map((c) => (
@@ -137,53 +161,103 @@ const CreateBookingPage = ({ vendor, socket }) => {
                             </option>
                           ))}
                         </Select>
+                      </div>
+                    )}
+                    {details.type === "walkin" && (
+                      <div>
+                        <div className="form-group">
+                          <label>Customer Name</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            placeholder="Enter Customer Name"
+                            onChange={(e) =>
+                              setSelectedCustomer({
+                                ...selectedCustomer,
+                                name: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>Customer Email</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            placeholder="Enter Customer Email"
+                            onChange={(e) =>
+                              setSelectedCustomer({
+                                ...selectedCustomer,
+                                email: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>Customer Phone Number</label>
+                          <input
+                            className="form-control"
+                            type="text"
+                            placeholder="Enter Customer Phone Number"
+                            onChange={(e) =>
+                              setSelectedCustomer({
+                                ...selectedCustomer,
+                                phoneNumber: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                      </div>
+                    )}
+                    <div className="form-group">
+                      <label>Service</label>
+                      <Select
+                        id="service"
+                        placeholder="Select Service"
+                        className="ps-ant-dropdown"
+                        listItemHeight={20}
+                        value={selectedService?.name}
+                        onChange={(serviceId) => {
+                          const service = services?.filter(
+                            (c) => c._id === serviceId
+                          )[0];
+                          console.log("selecting  service", service);
+                          setSelectedService(service);
+                        }}
+                      >
+                        {services?.map((c) => (
+                          <option key={c.id} value={c._id}>
+                            {c.name}
+                          </option>
+                        ))}
+                      </Select>
+                      {selectedService && (
+                        <p className="text-mute mt-3">
+                          Price: R {selectedService?.salePrice}
+                        </p>
+                      )}
                     </div>
                     <div className="form-group">
-                     
-                        <label>Service</label>
-                        <Select
-                          id="service"
-                          placeholder="Select Service"
-                          className="ps-ant-dropdown"
-                          listItemHeight={20}
-                          value={selectedService?.name}
-                          onChange={(serviceId) => {
-                            const service = services?.filter(
-                              (c) => c._id === serviceId
-                            )[0];
-                            console.log("selecting  service", service)
-                            setSelectedService(service);
-                          }}
-                        >
-                          {services?.map((c) => (
-                            <option key={c.id} value={c._id}>
-                              {c.name}
-                            </option>
-                          ))}
-                        </Select>
-                    </div>
-                    <div className="form-group">
-                      
-                        <label>Stylist</label>
-                        <Select
-                          id="stylist"
-                          placeholder="Select Customer"
-                          className="ps-ant-dropdown"
-                          listItemHeight={20}
-                          value={details?.stylist?.name}
-                          onChange={(stylistId) => {
-                            const stylist = stylists?.filter(
-                              (c) => c.id === stylistId
-                            )[0];
-                            setSelectedStylist(stylist);
-                          }}
-                        >
-                          {stylists?.map((c) => (
-                            <option key={c.id} value={c.id}>
-                              {c.name}
-                            </option>
-                          ))}
-                        </Select>
+                      <label>Stylist</label>
+                      <Select
+                        id="stylist"
+                        placeholder="Select Customer"
+                        className="ps-ant-dropdown"
+                        listItemHeight={20}
+                        value={details?.stylist?.name}
+                        onChange={(stylistId) => {
+                          const stylist = stylists?.filter(
+                            (c) => c.id === stylistId
+                          )[0];
+                          setSelectedStylist(stylist);
+                        }}
+                      >
+                        {stylists?.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.name}
+                          </option>
+                        ))}
+                      </Select>
                     </div>
                     <div className="form-group">
                       <label>
@@ -200,15 +274,6 @@ const CreateBookingPage = ({ vendor, socket }) => {
                         fixedHeight={true}
                       />
                     </div>
-                  </div>
-                </figure>
-              </div>
-
-              <div className="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-                <figure className="ps-block--form-box">
-                  <figcaption>Price</figcaption>
-                  <div className="ps-block__content">
-                    <h2>R{selectedService?.salePrice ?? 0}</h2>
                   </div>
                 </figure>
               </div>

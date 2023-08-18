@@ -4,12 +4,12 @@ import CardSaleReport from "~/components/shared/cards/CardSaleReport";
 import CardEarning from "~/components/shared/cards/CardEarning";
 import CardStatics from "~/components/shared/cards/CardStatics";
 import ContainerDashboard from "~/components/layouts/ContainerDashboard";
-import { useDispatch } from "react-redux";
 import { toggleDrawerMenu, saveVendor } from "~/store/app/action";
 import CardTopCountries from "~/components/shared/cards/CardTopCountries";
 import HeaderDashboard from "~/components/shared/headers/HeaderDashboard";
+import { connect, useDispatch } from "react-redux";
 
-const Index = ({ socket }) => {
+const Index = ({ socket, vendor }) => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(toggleDrawerMenu(false));
@@ -22,20 +22,20 @@ const Index = ({ socket }) => {
         <div className="ps-section__left">
           <div className="row">
             <div className="col-xl-8 col-12">
-              <CardSaleReport />
+              <CardSaleReport socket={socket} vendor={vendor} />
             </div>
             <div className="col-xl-4 col-12">
-              <CardEarning />
+              <CardEarning socket={socket} vendor={vendor} />
             </div>
           </div>
-          <CardRecentOrders />
+          <CardRecentOrders socket={socket} vendor={vendor} />
         </div>
         <div className="ps-section__right">
-          <CardStatics />
+          <CardStatics socket={socket} vendor={vendor} />
         </div>
       </section>
     </ContainerDashboard>
   );
 };
 
-export default Index;
+export default connect((state) => state.app)(Index);

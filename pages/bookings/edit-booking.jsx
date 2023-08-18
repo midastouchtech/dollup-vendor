@@ -5,7 +5,7 @@ import HeaderDashboard from "~/components/shared/headers/HeaderDashboard";
 import { connect, useDispatch } from "react-redux";
 import { toggleDrawerMenu } from "~/store/app/action";
 import categories from "~/public/data/categories.json";
-import { Select, Form, notification } from "antd";
+import { Select, Form, Checkbox, Typography } from "antd";
 import { isEmpty, omit } from "ramda";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -16,36 +16,43 @@ const format = "HH:mm";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
-
-// import {  Upload } from 'antd';
+import { Button, Radio, Icon } from "antd";
+import notification from "~/components/notification";
 
 const CreateBookingPage = ({ vendor, socket }) => {
   const router = useRouter();
 
   console.log("vendor", vendor);
   const dispatch = useDispatch();
-  const [details, setDetails] = useState();
+  const [details, setDetails] = useState({});
   const { vendorId, bookingId } = router.query;
   const [updatedVendor, setUpdatedVendor] = useState();
+  const [customers, setCustomers] = useState([]);
+  const [services, setServices] = useState([]);
+  const [stylists, setStylists] = useState([]);
 
-  if (socket && !updatedVendor) {
-    socket.emit("GET_VENDOR", { id: vendor?.id });
-    socket.on("RECEIVE_VENDOR", (data) => {
-      setUpdatedVendor(data);
-    });
-  }
-
-  console.log("socketlives", socket);
-  if (socket && !details) {
-    console.log("Getting booking", vendorId, bookingId);
-    socket.emit("GET_BOOKING", { vendorId, bookingId });
-    socket.on("RECEIVE_VENDOR_BOOKING", (data) => {
-      console.log("Receiving booking", data);
-      setDetails(data);
-    });
-  }
   useEffect(() => {
     dispatch(toggleDrawerMenu(false));
+    if (socket) {
+      console.log("Getting booking", vendorId, bookingId);
+      socket.emit("GET_BOOKING", { id: bookingId });
+      socket.on("RECEIVE_BOOKING", (data) => {
+        console.log("Receiving booking", data);
+        setDetails(data);
+      });
+      socket.emit("GET_VENDOR_CUSTOMERS", { id: vendor.id });
+      socket.emit("GET_VENDOR_STYLISTS", { id: vendor.id });
+      socket.emit("GET_VENDOR_SERVICES", { id: vendor.id });
+      socket.on("RECEIVE_VENDOR_CUSTOMERS", (data) => {
+        setCustomers(data);
+      });
+      socket.on("RECEIVE_VENDOR_STYLISTS", (data) => {
+        setStylists(data);
+      });
+      socket.on("RECEIVE_VENDOR_SERVICES", (data) => {
+        setServices(data);
+      });
+    }
   }, []);
 
   const setDetail = (key, val) => {
@@ -53,38 +60,22 @@ const CreateBookingPage = ({ vendor, socket }) => {
   };
 
   const handleSubmit = () => {
-    const id = uuid();
     socket.onAny((event, ...args) => {
       console.log(event, args);
     });
-    notification.destroy(id);
-    console.log(details);
     if (socket && !isEmpty(details)) {
-      socket.emit("UPDATE_VENDOR_BOOKING", {
-        vendor: { _id: vendor._id },
-        booking: {
-          ...details,
-        },
-      });
+      socket.emit("UPDATE_BOOKING", details);
       socket.on("RECEIVE_UPDATE_BOOKING_SUCCESS", () => {
-        notification.success({
-          key: details.name,
-          message: "Success!",
-          description: "Your new booking has been added to your store!",
-        });
-
-        router.push("/bookings");
+        notification.success("Your booking has been edited.");
+        //router.push("/bookings");
       });
       socket.on("RECEIVE_UPDATE_CUSTOMER_ERROR", () => {
-        notification.error({
-          key: details.name,
-          message: "Something went wrong.",
-          description: "Your new Service could not be added to your store.",
-        });
+        notification.error(
+          "Your new Service could not be added to your store."
+        );
       });
     }
   };
-  console.log(details);
   return (
     <ContainerDashboard title="Create new product">
       <HeaderDashboard
@@ -93,9 +84,131 @@ const CreateBookingPage = ({ vendor, socket }) => {
       />
       <section className="ps-new-item">
         <Form className="ps-form ps-form--new-product">
-          <div className="ps-form__content">
-            <div className="row">
-              <div className="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+          <div className="ps-form__bottom my-4">
+            <Link className="ps-btn ps-btn--black" href="/bookings">
+              Back
+            </Link>
+            <Link className="ps-btn ps-btn--gray" href="/bookings">
+              Cancel
+            </Link>
+            <button className="ps-btn" onClick={handleSubmit}>
+              Submit
+            </button>
+          </div>
+          <div className="ps-form__content edit-booking">
+            <div className="row d-flex flex-row justify-content-center">
+              <div className="col-md-8">
+                <figure className="ps-block--form-box">
+                  <figcaption>Booking Status</figcaption>
+                  <div className="ps-block__content">
+                    <div className="row">
+                      <div className="form-group col-md-3 col-sm-12 col-xs-12">
+                        <label>Appointment Is Complete</label>
+                        <br />
+                        <Button
+                          type={
+                            details?.isComplete === false
+                              ? "primary"
+                              : "default"
+                          }
+                          size="large"
+                          className="mr-3"
+                          onClick={() => setDetail("isComplete", false)}
+                        >
+                          No
+                        </Button>
+                        <Button
+                          type={details?.isComplete ? "primary" : "default"}
+                          size="large"
+                          className="mr-3"
+                          onClick={() => setDetail("isComplete", true)}
+                        >
+                          Yes
+                        </Button>
+                      </div>
+                      <div className="form-group col-md-3 col-sm-12 col-xs-12">
+                        <label>Appointment Is Paid</label>
+                        <br />
+                        <Button
+                          type={
+                            details?.isPaid === false ? "primary" : "default"
+                          }
+                          size="large"
+                          className="mr-3"
+                          onClick={() => setDetail("isPaid", false)}
+                        >
+                          No
+                        </Button>
+                        <Button
+                          type={details?.isPaid ? "primary" : "default"}
+                          size="large"
+                          className="mr-3"
+                          onClick={() => setDetail("isPaid", true)}
+                        >
+                          Yes
+                        </Button>
+                      </div>
+                      <div className="form-group col-md-3 col-sm-12 col-xs-12">
+                        <label>Appointment Is Cancelled</label>
+                        <br />
+                        <Button
+                          type={
+                            details?.isCancelled === false
+                              ? "primary"
+                              : "default"
+                          }
+                          size="large"
+                          className="mr-3"
+                          onClick={() => setDetail("isCancelled", false)}
+                        >
+                          No
+                        </Button>
+                        <Button
+                          type={details?.isCancelled ? "primary" : "default"}
+                          size="large"
+                          className="mr-3"
+                          onClick={() => setDetail("isCancelled", true)}
+                        >
+                          Yes
+                        </Button>
+                      </div>
+                      <div className="form-group col-md-3 col-sm-12 col-xs-12">
+                        <label>Client didn't show up</label>
+                        <br />
+                        <Button
+                          type={
+                            details?.isNoShow === false ? "primary" : "default"
+                          }
+                          size="large"
+                          className="mr-3"
+                          onClick={() => setDetail("isNoShow", false)}
+                          checked={details?.isNoShow}
+                        >
+                          No
+                        </Button>
+                        <Button
+                          type={details?.isNoShow ? "primary" : "default"}
+                          size="large"
+                          className="mr-3"
+                          onClick={() => setDetail("isNoShow", true)}
+                          checked={details?.isNoShow}
+                        >
+                          Yes
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </figure>
+              </div>
+              <div className="col-md-8">
+                <figure className="ps-block--form-box">
+                  <figcaption>Price</figcaption>
+                  <div className="ps-block__content">
+                    <h2>R{details?.service?.salePrice ?? 0}</h2>
+                  </div>
+                </figure>
+              </div>
+              <div className="col-md-8">
                 <figure className="ps-block--form-box">
                   <figcaption>General</figcaption>
                   <div className="ps-block__content">
@@ -108,7 +221,7 @@ const CreateBookingPage = ({ vendor, socket }) => {
                         listItemHeight={20}
                         value={details?.customer?.name}
                         onChange={(customerId) => {
-                          const customer = updatedVendor?.customers?.filter(
+                          const customer = customers?.filter(
                             (c) => c.id === customerId
                           )[0];
                           setDetail(
@@ -120,7 +233,7 @@ const CreateBookingPage = ({ vendor, socket }) => {
                           );
                         }}
                       >
-                        {updatedVendor?.customers?.map((c) => (
+                        {customers?.map((c) => (
                           <option key={c.id} value={c.id}>
                             {c.name}
                           </option>
@@ -136,7 +249,7 @@ const CreateBookingPage = ({ vendor, socket }) => {
                         listItemHeight={20}
                         value={details?.stylist?.name}
                         onChange={(stylistId) => {
-                          const stylist = updatedVendor?.stylists?.filter(
+                          const stylist = stylists?.filter(
                             (c) => c.id === stylistId
                           )[0];
                           setDetail(
@@ -148,7 +261,7 @@ const CreateBookingPage = ({ vendor, socket }) => {
                           );
                         }}
                       >
-                        {updatedVendor?.stylists?.map((c) => (
+                        {stylists?.map((c) => (
                           <option key={c.id} value={c.id}>
                             {c.name}
                           </option>
@@ -164,14 +277,14 @@ const CreateBookingPage = ({ vendor, socket }) => {
                         listItemHeight={20}
                         value={details?.service?.name}
                         onChange={(serviceId) => {
-                          const service = updatedVendor?.services?.filter(
+                          const service = services?.filter(
                             (c) => c.id === serviceId
                           )[0];
                           setDetail("service", service);
                           //setDetail('price', service?.salePrice)
                         }}
                       >
-                        {updatedVendor?.services?.map((c) => (
+                        {services?.map((c) => (
                           <option key={c.id} value={c.id}>
                             {c.name}
                           </option>
@@ -197,15 +310,6 @@ const CreateBookingPage = ({ vendor, socket }) => {
                         fixedHeight={true}
                       />
                     </div>
-                  </div>
-                </figure>
-              </div>
-
-              <div className="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-                <figure className="ps-block--form-box">
-                  <figcaption>Price</figcaption>
-                  <div className="ps-block__content">
-                    <h2>R{details?.service?.salePrice ?? 0}</h2>
                   </div>
                 </figure>
               </div>

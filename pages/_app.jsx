@@ -1,29 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import DefaultLayout from '~/components/layouts/DefaultLayout';
-import { wrapper } from '~/store/store';
-import '~/styles/style.scss';
+import React, { useEffect, useState } from "react";
+import DefaultLayout from "~/components/layouts/DefaultLayout";
+import { wrapper } from "~/store/store";
+import "~/styles/style.scss";
 import io from "socket.io-client";
 
 function App({ Component, pageProps }) {
-    const [socket, setSocket] = useState(null);
-    const getLayout =
-        Component.getLayout || ((page) => <DefaultLayout children={page} />);
-    useEffect(() => {
-        setTimeout(function () {
-            document.getElementById('__next').classList.add('loaded');
-        }, 100);
-    }, []);
+  const [socket, setSocket] = useState(null);
+  const getLayout =
+    Component.getLayout || ((page) => <DefaultLayout children={page} />);
+  useEffect(() => {
+    setTimeout(function () {
+      document.getElementById("__next").classList.add("loaded");
+    }, 100);
+  }, []);
 
-    if(!socket){
-        const newSocket = io(`http://localhost:3067`);
-        setSocket(newSocket);
-        newSocket.onAny((eventName, ...args) => {
-            console.log("** Handling: ", eventName)
-          });
-      }
+  if (!socket) {
+    const newSocket = io(`http://localhost:3067`);
+    setSocket(newSocket);
+    newSocket.onAny((eventName, ...args) => {
+      console.log("** Handling: ", eventName);
+    });
+  }
 
-    return getLayout(<Component {...pageProps} socket={socket} />);
+  return getLayout(<Component {...pageProps} socket={socket}></Component>);
 }
-
 
 export default wrapper.withRedux(App);

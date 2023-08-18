@@ -1,76 +1,116 @@
-import React from 'react';
-import dynamic from 'next/dynamic';
-const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
+import React from "react";
+import { useEffect, useState } from "react";
 
-const CardEarning = () => {
-    const state = {
-        series: [],
-        options: {
+const PLATFORM_COMMISION = 0.2;
+
+import dynamic from "next/dynamic";
+const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
+
+const CardEarning = ({ socket, vendor }) => {
+  const [chartData, setChartData] = useState([]);
+  const [chartCategories, setChartCategories] = useState([]);
+  const [bookings, setBookings] = useState();
+
+  useEffect(() => {
+    if (!bookings && socket && vendor) {
+      socket.emit("GET_VENDOR_BOOKINGS", { id: vendor.id });
+      socket.on("RECEIVE_VENDOR_BOOKINGS", (data) => {
+        setBookings(data);
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (bookings) {
+      const services = bookings.map((b) => b.service);
+      let prices = {};
+      services.forEach((s, i) => {
+        if (!prices[s.id]) {
+          prices[s.id] = {
+            name: s.name,
+            price: parseInt(s.salePrice),
+          };
+        } else {
+          prices[s.id].price = prices[s.id].price + parseInt(s.salePrice);
+        }
+      });
+      const data = Object.values(prices).map((p) => p.price);
+      const categories = Object.values(prices).map((p) => p.name);
+      setChartData(data);
+      setChartCategories(categories);
+    }
+  }, [bookings]);
+
+  const state = {
+    series: chartData,
+    labels: chartCategories,
+    options: {
+      chart: {
+        height: 500,
+        type: "donut",
+      },
+      dataLabels: {
+        enabled: false,
+      },
+
+      legend: {
+        show: false,
+      },
+      tooltip: {
+        enabled: false,
+      },
+      responsive: [
+        {
+          breakpoint: 480,
+          options: {
             chart: {
-                height: 500,
-                type: 'donut',
+              width: "100%",
             },
-            dataLabels: {
-                enabled: false,
-            },
-
             legend: {
-                show: false,
+              position: "bottom",
             },
-            tooltip: {
-                enabled: false,
-            },
-            responsive: [
-                {
-                    breakpoint: 480,
-                    options: {
-                        chart: {
-                            width: '100%',
-                        },
-                        legend: {
-                            position: 'bottom',
-                        },
-                    },
-                },
-            ],
+          },
         },
-    };
+      ],
+    },
+  };
 
-    return (
-        <div className="ps-card ps-card--earning">
-            <div className="ps-card__header">
-                <h4>Earnings</h4>
-            </div>
-            <div className="ps-card__content">
-                <div className="ps-card__chart">
-                    <Chart
-                        options={state.options}
-                        series={state.series}
-                        type="donut"
-                    />
-                    <div className="ps-card__information">
-                        <i className="icon icon-wallet"></i>
-                        <strong>R0</strong>
-                        <small>Balance</small>
-                    </div>
-                </div>
-                <div className="ps-card__status">
-                    <p className="yellow">
-                        <strong> R0</strong>
-                        <span>Income</span>
-                    </p>
-                    <p className="red">
-                        <strong> R0</strong>
-                        <span>Taxes</span>
-                    </p>
-                    <p className="green">
-                        <strong> R0</strong>
-                        <span>Fees</span>
-                    </p>
-                </div>
-            </div>
+  const total = chartData.reduce((acc, curr) => acc + curr, 0);
+  const stylistCommision = total * (parseInt(vendor?.stylistCommision) / 100);
+  const platformCommision = total * PLATFORM_COMMISION;
+  const balance = total - stylistCommision - platformCommision;
+
+  return (
+    <div className="ps-card ps-card--earning">
+      <div className="ps-card__header">
+        <h4>Potential Earnings</h4>
+      </div>
+      <div className="ps-card__content">
+        <div className="ps-card__chart">
+          <Chart options={state.options} series={state.series} type="donut" />
+          <div className="ps-card__information">
+            <i className="icon icon-wallet"></i>
+            <strong>R{total}</strong>
+            <small>Balance</small>
+          </div>
         </div>
-    );
+        <div className="ps-card__status">
+          <p className="red">
+            <strong> - R {stylistCommision}</strong>
+            <span>Stylist Commission</span>
+          </p>
+          <p className="red">
+            <strong> - R {platformCommision}</strong>
+            <span>Platform Commission</span>
+          </p>
+          <p className="green">
+            <strong> R {balance}</strong>
+            <span>Net</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default CardEarning;
