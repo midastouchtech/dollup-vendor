@@ -15,7 +15,7 @@ function App({ Component, pageProps }) {
   }, []);
 
   if (!socket) {
-    const newSocket = io(`http://localhost:3067`);
+    const newSocket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}}`);
     setSocket(newSocket);
     newSocket.onAny((eventName, ...args) => {
       console.log("** Handling: ", eventName);
