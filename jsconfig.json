@@ -1,15 +1,15 @@
 {
-    "compilerOptions": {
-        "target": "esnext",
-        "module": "commonjs",
-        "esModuleInterop": true,
-        "baseUrl": ".",
-        "paths": {
-            "~/*": ["./*"],
-            "@/*": ["./*"],
-            "~~/*": ["./*"],
-            "@@/*": ["./*"]
-        }
-    },
-    "exclude": ["node_modules", ".nuxt", "dist"]
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./*"],
+      "@/*": ["./*"],
+      "~~/*": ["./*"],
+      "@@/*": ["./*"]
+    }
+  },
+  "exclude": ["node_modules", ".next", "dist"]
 }
