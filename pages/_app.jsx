@@ -15,7 +15,16 @@ function App({ Component, pageProps }) {
   }, []);
 
   if (!socket) {
-    const newSocket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}}`);
+    const socektOptions = {
+      path: "/socket.io",
+      transports: ["websocket"],
+      secure: true,
+    };
+    const newSocket = io(
+      `${process.env.NEXT_PUBLIC_SOCKET_URL}}`,
+      socektOptions
+    );
+    console.log("started socket", newSocket);
     setSocket(newSocket);
     newSocket.onAny((eventName, ...args) => {
       console.log("** Handling: ", eventName);

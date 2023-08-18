@@ -4,9 +4,8 @@ import { toggleDrawerMenu } from "~/store/app/action";
 import styled from "styled-components";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
-import cookie from 'cookiejs';
+import cookie from "cookiejs";
 import { omit } from "ramda";
-
 
 const Container = styled.div`
   display: flex;
@@ -22,34 +21,53 @@ const FormContainer = styled.div`
 `;
 
 const Login = ({ vendor, socket }) => {
+  console.log("vendor login", socket)
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("")
+  const [error, setError] = useState("");
   const dispatch = useDispatch();
-  const router = useRouter()
+  const router = useRouter();
   useEffect(() => {
     dispatch(toggleDrawerMenu(false));
   }, []);
 
-  const onSubmit =(e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
-    setError('')
-    socket.emit("VENDOR_LOGIN", {email, password})
-    socket.on("VENDOR_LOGIN_SUCCESS", (vendor)=> {
-      console.log("found vendor", vendor)
-      console.log(Cookies)
-      console.log(Cookies.set)
-        cookie('dollup_logged_in_vendor',JSON.stringify(omit(["tracking","services", "customers", "bookings"], vendor)), 1 )
-        router.push('/')
-    })
+    setError("");
+    console.log("Submitting vendor info", { email, password }});
+    socket.emit("VENDOR_LOGIN", { email, password });
+    socket.on("VENDOR_LOGIN_SUCCESS", (vendor) => {
+      console.log("found vendor", vendor);
+      console.log(Cookies);
+      console.log(Cookies.set);
+      cookie(
+        "dollup_logged_in_vendor",
+        JSON.stringify(
+          omit(["tracking", "services", "customers", "bookings"], vendor)
+        ),
+        1
+      );
+      router.push("/");
+    });
     socket.on("VENDOR_LOGIN_ERROR", (err) => {
-        setError(err.message)
-    })
-  }
+      console.log("error", err);
+      setError(err.message);
+    });
+  };
   return (
     <Container>
       <FormContainer>
         <div className="row">
+          <div className="col-sm-12">
+            <h1 className="display-1">
+              Dollup <strong>Vendors</strong>
+            </h1>
+            <h2 className="display-4">Login</h2>
+            <p className="lead">
+              Login to your account to view your dashboard and manage your
+              bookings.
+            </p>
+          </div>
           <div className="col-sm-12">
             <div className="form-group">
               <label>Email</label>
@@ -80,9 +98,7 @@ const Login = ({ vendor, socket }) => {
             Login
           </button>
         </div>
-        <div className="ps-form__submit text-center">
-          {error}
-        </div>
+        <div className="ps-form__submit text-center">{error}</div>
       </FormContainer>
     </Container>
   );
