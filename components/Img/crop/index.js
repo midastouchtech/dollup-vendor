@@ -26,7 +26,9 @@ function centerAspectCrop(mediaWidth, mediaHeight, aspect) {
 }
 
 export default function ImgUploadWithCropper(props) {
-  useHolderjs()
+  if (typeof window === "undefined") {
+    useHolderjs();
+  }
   const [imgSrc, setImgSrc] = useState("");
   const previewCanvasRef = useRef(null);
   const imgRef = useRef(null);
@@ -40,10 +42,10 @@ export default function ImgUploadWithCropper(props) {
   const [fileName, setFileName] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [percentCompleted, setPercentCompleted] = useState(0);
-  const [ hasReselectedImage, setHasReselected] = useState(false);
+  const [hasReselectedImage, setHasReselected] = useState(false);
 
   function onSelectFile(e) {
-    setHasReselected(true)
+    setHasReselected(true);
     if (e.target.files && e.target.files.length > 0) {
       setCrop(undefined); // Makes crop preview update between images.
       const reader = new FileReader();
@@ -159,11 +161,7 @@ export default function ImgUploadWithCropper(props) {
             </ReactCrop>
           )}
           {!imgSrc && (
-            <img
-              alt="uploaded"
-              data-src={src}
-              width="200" height="200"
-            />
+            <img alt="uploaded" data-src={src} width="200" height="200" />
           )}
         </div>
         <div class="col-sm-6 col-xs-12 custom-file">
@@ -191,7 +189,7 @@ export default function ImgUploadWithCropper(props) {
                     border: "1px solid black",
                     objectFit: "contain",
                     width: props.width / 2,
-                    height: props.height /2,
+                    height: props.height / 2,
                   }}
                 />
               )}
@@ -202,13 +200,13 @@ export default function ImgUploadWithCropper(props) {
                 padding: 0,
               }}
             >
-                <button
-                  className="btn btn-primary mb-3"
-                  onClick={onDownloadCropClick}
-                  disabled={!completedCrop}
-                >
-                  Upload
-                </button>
+              <button
+                className="btn btn-primary mb-3"
+                onClick={onDownloadCropClick}
+                disabled={!completedCrop}
+              >
+                Upload
+              </button>
               {isUploading && <div>Uploading... {percentCompleted}%</div>}
             </div>
           </div>
