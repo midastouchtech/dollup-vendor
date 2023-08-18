@@ -37,6 +37,12 @@ const ContainerDashboard = ({ children, title, socket, vendor }) => {
     <div className="martfury-admin">
       <Head>
         <title>{titleView}</title>
+        <script
+          src="https://cdnjs.cloudflare.com/ajax/libs/holder/2.9.8/holder.min.js"
+          integrity="sha512-O6R6IBONpEcZVYJAmSC+20vdsM07uFuGjFf0n/Zthm8sOFW+lAq/OK1WOL8vk93GBDxtMIy6ocbj6lduyeLuqQ=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer"
+        ></script>
       </Head>
       <ToastContainer
         position="top-right"
