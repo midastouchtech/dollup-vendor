@@ -5,7 +5,6 @@ import { canvasPreview } from "./canvasPreview";
 import { useDebounceEffect } from "./useDebounceEffects";
 import axios from "axios";
 import "react-image-crop/dist/ReactCrop.css";
-import { useHolderjs } from "use-holderjs";
 
 // This is to demonstate how to make and center a % aspect crop
 // which is a bit trickier so we use some helper functions.
@@ -26,9 +25,6 @@ function centerAspectCrop(mediaWidth, mediaHeight, aspect) {
 }
 
 export default function ImgUploadWithCropper(props) {
-  if (typeof window !== "undefined") {
-    useHolderjs();
-  }
   const [imgSrc, setImgSrc] = useState("");
   const previewCanvasRef = useRef(null);
   const imgRef = useRef(null);
