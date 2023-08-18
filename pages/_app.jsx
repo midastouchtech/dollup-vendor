@@ -21,7 +21,7 @@ function App({ Component, pageProps }) {
       secure: true,
     };
     const newSocket = io(
-      `${process.env.NEXT_PUBLIC_SOCKET_URL}}`,
+      `${process.env.NEXT_PUBLIC_SOCKET_URL}`,
       socektOptions
     );
     console.log("started socket", newSocket);
