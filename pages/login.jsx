@@ -21,7 +21,7 @@ const FormContainer = styled.div`
 `;
 
 const Login = ({ vendor, socket }) => {
-  console.log("vendor login", socket)
+  console.log("vendor login", socket);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -34,7 +34,7 @@ const Login = ({ vendor, socket }) => {
   const onSubmit = (e) => {
     e.preventDefault();
     setError("");
-    console.log("Submitting vendor info", { email, password }});
+    console.log("Submitting vendor info", { email, password });
     socket.emit("VENDOR_LOGIN", { email, password });
     socket.on("VENDOR_LOGIN_SUCCESS", (vendor) => {
       console.log("found vendor", vendor);
