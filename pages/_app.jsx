@@ -24,7 +24,11 @@ function App({ Component, pageProps }) {
       `${process.env.NEXT_PUBLIC_SOCKET_URL}`,
       socektOptions
     );
-    console.log("started socket", newSocket);
+    console.log(
+      "started socket from",
+      process.env.NEXT_PUBLIC_SOCKET_URL,
+      newSocket
+    );
     setSocket(newSocket);
     newSocket.onAny((eventName, ...args) => {
       console.log("** Handling: ", eventName);
