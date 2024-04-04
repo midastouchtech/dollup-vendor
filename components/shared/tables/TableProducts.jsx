@@ -1,0 +1,67 @@
+import React from 'react';
+import DropdownAction from '~/components/elements/basic/DropdownAction';
+
+const TableProjectItems = ({products, socket}) => {
+    const tableItems = products?.map((item, index) => {
+        let badgeView;
+        if (item?.active) {
+            badgeView = <span className="ps-badge success">Active</span>;
+        } else {
+            badgeView = <span className="ps-badge gray">Inactive</span>;
+        }
+        return (
+            <tr key={item?.name}>
+                <td>{index + 1}</td>
+                <td>
+                    <a href="#">
+                        <strong>{item?.title}</strong>
+                    </a>
+                </td>
+                <td>
+                    <a href="#">
+                        <strong>{item?.subTitle}</strong>
+                    </a>
+                </td>
+                <td>{badgeView}</td>
+                <td>
+                    <strong>{item?.salePrice}</strong>
+                </td>
+                <td>
+                    <p className="ps-item-categories">
+                        {item?.category?.name}
+                        {/* {item?.categories.map((cat) => (
+                            <a href="#" key={cat.name}>
+                                {cat.name}
+                            </a>
+                        ))} */}
+                    </p>
+                </td>
+                <td>{item?.date}</td>
+                <td>
+                    <DropdownAction type="products" id={item?.id} socket={socket} />
+                </td>
+            </tr>
+        );
+    });
+    return (
+        <div className="table-responsive">
+            <table className="table ps-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Sub Title</th>
+                        <th>Active</th>
+                        <th>Price</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>{tableItems}</tbody>
+            </table>
+        </div>
+    );
+};
+
+export default TableProjectItems;

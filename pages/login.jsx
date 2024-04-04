@@ -39,11 +39,13 @@ const Login = ({ vendor, socket }) => {
     socket.on("VENDOR_LOGIN_SUCCESS", (vendor) => {
       console.log("found vendor", vendor);
       console.log(Cookies);
-      console.log(Cookies.set);
+      console.log(JSON.stringify(
+        omit(["tracking", "services", "customers", "bookings" ,"products"], vendor)
+      ));
       cookie(
         "dollup_logged_in_vendor",
         JSON.stringify(
-          omit(["tracking", "services", "customers", "bookings"], vendor)
+          omit(["tracking", "services", "customers", "bookings" ,"products", 'bio'], vendor)
         ),
         1
       );

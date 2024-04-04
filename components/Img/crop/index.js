@@ -1,66 +1,54 @@
 import React, { useState, useRef } from "react";
-
-import ReactCrop, { centerCrop, makeAspectCrop } from "react-image-crop";
-import { canvasPreview } from "./canvasPreview";
-import { useDebounceEffect } from "./useDebounceEffects";
 import axios from "axios";
-import "react-image-crop/dist/ReactCrop.css";
-
-// This is to demonstate how to make and center a % aspect crop
-// which is a bit trickier so we use some helper functions.
-function centerAspectCrop(mediaWidth, mediaHeight, aspect) {
-  return centerCrop(
-    makeAspectCrop(
-      {
-        unit: "%",
-        width: 90,
-      },
-      aspect,
-      mediaWidth,
-      mediaHeight
-    ),
-    mediaWidth,
-    mediaHeight
-  );
-}
+import { set } from "ramda";
 
 export default function ImgUploadWithCropper(props) {
-  const [imgSrc, setImgSrc] = useState("");
-  const previewCanvasRef = useRef(null);
-  const imgRef = useRef(null);
-  const hiddenAnchorRef = useRef(null);
-  const blobUrlRef = useRef("");
-  const [crop, setCrop] = useState();
-  const [completedCrop, setCompletedCrop] = useState();
-  const [scale, setScale] = useState(1);
-  const [rotate, setRotate] = useState(0);
-  const [aspect, setAspect] = useState(1);
-  const [fileName, setFileName] = useState("");
+
+  const [fileName, setFileName] = useState(null);
+  const [file, setFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadComplete, setUploadComplete] = useState(false);
   const [percentCompleted, setPercentCompleted] = useState(0);
-  const [hasReselectedImage, setHasReselected] = useState(false);
 
   function onSelectFile(e) {
-    setHasReselected(true);
-    if (e.target.files && e.target.files.length > 0) {
-      setCrop(undefined); // Makes crop preview update between images.
-      const reader = new FileReader();
-      reader.addEventListener("load", () =>
-        setImgSrc(reader.result?.toString() || "")
-      );
-      reader.readAsDataURL(e.target.files[0]);
-      setFileName(e.target.files[0].name);
-    }
+    setFile(e.target.files[0]);
+    setFileName(e.target.files[0].name);
   }
 
-  function onImageLoad(e) {
-    if (aspect) {
-      const { width, height } = e.currentTarget;
-      setCrop(centerAspectCrop(width, height, aspect));
-    }
+  function uploadFileToCloudinary() {
+    setIsUploading(true);
+    setUploadComplete(false);
+    const url = "https://api.cloudinary.com/v1_1/dhrndsuey/raw/upload";
+    const formData = new FormData();
+    formData.append("file", file, fileName);
+    formData.append("upload_preset", "v2f3pxl6");
+    axios({
+      method: "POST",
+      data: formData,
+      onUploadProgress: (progressEvent) => {
+        console.log(progressEvent.loaded);
+
+        const percentCompleted = Math.round(
+          (progressEvent.loaded * 100) / progressEvent.total
+        );
+        setPercentCompleted(percentCompleted);
+        if (percentCompleted === 100) {
+          setPercentCompleted(0);
+        }
+      },
+      headers: { "Content-Type": "multipart/form-data" },
+      url,
+    })
+      .then((response) => {
+        setIsUploading(false);
+        console.log(response.data.secure_url);
+        props.onUploadComplete(response.data.secure_url);
+        setUploadComplete(true);
+      })
+      .then((data) => {});
   }
 
-  function upload(file) {
+  function upload(e) {
     setIsUploading(true);
     const url = "https://api.cloudinary.com/v1_1/clinic-plus/raw/upload";
     const formData = new FormData();
@@ -91,76 +79,11 @@ export default function ImgUploadWithCropper(props) {
       .then((data) => {});
   }
 
-  function onDownloadCropClick(e) {
-    e.preventDefault();
-    if (!previewCanvasRef.current) {
-      throw new Error("Crop canvas does not exist");
-    }
-
-    previewCanvasRef.current.toBlob((blob) => {
-      console.log(blob);
-      let file = new File([blob], fileName);
-      upload(file);
-    });
-  }
-
-  if (!imgSrc && props.src) {
-    setImgSrc(props.src);
-  }
-
-  useDebounceEffect(
-    async () => {
-      if (
-        completedCrop?.width &&
-        completedCrop?.height &&
-        imgRef.current &&
-        previewCanvasRef.current
-      ) {
-        // We use canvasPreview as it's much faster than imgPreview.
-        canvasPreview(
-          imgRef.current,
-          previewCanvasRef.current,
-          completedCrop,
-          scale,
-          rotate
-        );
-      }
-    },
-    100,
-    [completedCrop, scale, rotate]
-  );
-
-  let src = `holder.js/${props.width}x${props.height}?text=Image`;
 
   return (
     <div className="App">
       <div className="row">
-        <div className="col-sm-6 col-xs-12">
-          {!!imgSrc && (
-            <ReactCrop
-              crop={crop}
-              onChange={(_, percentCrop) => setCrop(percentCrop)}
-              onComplete={(c) => setCompletedCrop(c)}
-              aspect={aspect}
-            >
-              <img
-                ref={imgRef}
-                crossorigin="anonymous"
-                alt="Crop me"
-                src={imgSrc}
-                onLoad={onImageLoad}
-                style={{
-                  border: "1px solid black",
-                  height: props.height,
-                }}
-              />
-            </ReactCrop>
-          )}
-          {!imgSrc && (
-            <img alt="uploaded" data-src={src} width="200" height="200" />
-          )}
-        </div>
-        <div class="col-sm-6 col-xs-12 custom-file">
+        <div class="col-sm-12 col-xs-12">
           <div className="flex-column align-items-center d-flex justify-content-center">
             <div className="col-md-12 mb-3">
               <input
@@ -168,28 +91,10 @@ export default function ImgUploadWithCropper(props) {
                 class="custom-file-input"
                 onChange={onSelectFile}
               />
-              <label class="custom-file-label">Choose file</label>
+              <label class="custom-file-label">{fileName ? fileName : "Choose file"}</label>
             </div>
           </div>
           <div className="d-flex justify-content-center flex-column mb-3">
-            <div
-              className="col-md-12 text-center mb-3"
-              style={{
-                padding: 0,
-              }}
-            >
-              {!!completedCrop && (
-                <canvas
-                  ref={previewCanvasRef}
-                  style={{
-                    border: "1px solid black",
-                    objectFit: "contain",
-                    width: props.width / 2,
-                    height: props.height / 2,
-                  }}
-                />
-              )}
-            </div>
             <div
               className="col-md-12 text-center"
               style={{
@@ -198,12 +103,12 @@ export default function ImgUploadWithCropper(props) {
             >
               <button
                 className="btn btn-primary mb-3"
-                onClick={onDownloadCropClick}
-                disabled={!completedCrop}
+                onClick={uploadFileToCloudinary}
               >
                 Upload
               </button>
               {isUploading && <div>Uploading... {percentCompleted}%</div>}
+              {uploadComplete && <div>Upload Complete !</div>}
             </div>
           </div>
         </div>

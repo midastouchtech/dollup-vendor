@@ -12,6 +12,8 @@
     },
     "dependencies": {
         "@ant-design/icons": "^5.0.0",
+        "@cloudinary/react": "^1.13.0",
+        "@cloudinary/url-gen": "^1.18.0",
         "@netlify/next": "^1.4.3",
         "@zeit/next-sass": "^1.0.1",
         "antd": "^5.1.7",

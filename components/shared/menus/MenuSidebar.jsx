@@ -11,8 +11,13 @@ const MenuSidebar = () => {
       icon: "icon-home",
     },
     {
-      text: "Service",
+      text: "Services",
       url: "/services",
+      icon: "icon-database",
+    },
+    {
+      text: "Products",
+      url: "/products",
       icon: "icon-database",
     },
     {
