@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import ContainerDefault from "~/components/layouts/ContainerDefault";
-import FormAccountSettings from "~/components/shared/forms/FormAccountSettings";
-import HeaderDashboard from "~/components/shared/headers/HeaderDashboard";
-import { connect, useDispatch } from "react-redux";
-import { toggleDrawerMenu } from "~/store/app/action";
-import { DatePicker, Space } from "antd";
-import { Select, Form, notification } from "antd";
-import moment from "moment";
-import { Typography } from "antd";
-import { Card } from "antd";
+import React, { useEffect, useState } from 'react';
+import ContainerDefault from '~/components/layouts/ContainerDefault';
+import FormAccountSettings from '~/components/shared/forms/FormAccountSettings';
+import HeaderDashboard from '~/components/shared/headers/HeaderDashboard';
+import { connect, useDispatch } from 'react-redux';
+import { toggleDrawerMenu } from '~/store/app/action';
+import { DatePicker, Space } from 'antd';
+import { Select, Form, notification } from 'antd';
+import moment from 'moment';
+import { Typography } from 'antd';
+import { Card } from 'antd';
 
 const { Title } = Typography;
 
@@ -27,13 +27,13 @@ const ReportsPage = ({ vendor, socket }) => {
   useEffect(() => {
     dispatch(toggleDrawerMenu(false));
     if (!bookings && socket && vendor) {
-      socket.emit("GET_VENDOR_BOOKINGS", { id: vendor.id });
-      socket.on("RECEIVE_VENDOR_BOOKINGS", (data) => {
+      socket.emit('GET_VENDOR_BOOKINGS', { id: vendor.id });
+      socket.on('RECEIVE_VENDOR_BOOKINGS', (data) => {
         setBookings(data);
         setOriginalBookings(data);
       });
-      socket.emit("GET_VENDOR_STYLISTS", { id: vendor.id });
-      socket.on("RECEIVE_VENDOR_STYLISTS", (data) => {
+      socket.emit('GET_VENDOR_STYLISTS', { id: vendor.id });
+      socket.on('RECEIVE_VENDOR_STYLISTS', (data) => {
         setStylists(data);
         setOriginalStylists(data);
       });
@@ -77,7 +77,7 @@ const ReportsPage = ({ vendor, socket }) => {
   // ONLINE BOOKINGS
 
   const onlineBookings = bookings?.filter(
-    (booking) => booking.type === "online"
+    (booking) => booking.type === 'online'
   );
   const onlineBookingsPercentage =
     Math.round((onlineBookings?.length / bookings?.length) * 100) || 0;
@@ -96,20 +96,20 @@ const ReportsPage = ({ vendor, socket }) => {
       (incompleteOnlineBookings?.length / onlineBookings?.length) * 100
     ) || 0;
   const cancelledOnlineBookings = cancelledBookings?.filter(
-    (booking) => booking.type === "online"
+    (booking) => booking.type === 'online'
   );
   const cancelledOnlineBookingsPercentage =
     Math.round(
       (cancelledOnlineBookings?.length / cancelledBookings?.length) * 100
     ) || 0;
   const noShowOnlineBookings = noShowBookings?.filter(
-    (booking) => booking.type === "online"
+    (booking) => booking.type === 'online'
   );
   const noShowOnlineBookingsPercentage =
     Math.round((noShowOnlineBookings?.length / noShowBookings?.length) * 100) ||
     0;
   const paidOnlineBookings = paidBookings?.filter(
-    (booking) => booking.type === "online"
+    (booking) => booking.type === 'online'
   );
   const paidOnlineBookingsPercentage =
     Math.round((paidOnlineBookings?.length / paidBookings?.length) * 100) || 0;
@@ -117,7 +117,7 @@ const ReportsPage = ({ vendor, socket }) => {
   // WALK IN BOOKINGS
 
   const walkInBookings = bookings?.filter(
-    (booking) => booking.type === "walkin"
+    (booking) => booking.type === 'walkin'
   );
   const walkInBookingsPercentage = Math.round(
     (walkInBookings?.length / bookings?.length) * 100
@@ -137,7 +137,7 @@ const ReportsPage = ({ vendor, socket }) => {
       (incompleteWalkInBookings?.length / walkInBookings?.length) * 100
     ) || 0;
   const cancelledWalkInBookings = cancelledBookings?.filter(
-    (booking) => booking.type === "walkin"
+    (booking) => booking.type === 'walkin'
   );
   const cancelledWalkInBookingsPercentage =
     Math.round(
@@ -150,7 +150,7 @@ const ReportsPage = ({ vendor, socket }) => {
     Math.round((noShowWalkInBookings?.length / noShowBookings?.length) * 100) ||
     0;
   const paidWalkInBookings = paidBookings?.filter(
-    (booking) => booking.type === "walkin"
+    (booking) => booking.type === 'walkin'
   );
   const paidWalkInBookingsPercentage =
     Math.round((paidWalkInBookings?.length / paidBookings?.length) * 100) || 0;
@@ -217,55 +217,55 @@ const ReportsPage = ({ vendor, socket }) => {
     return total + netRevenue;
   }, 0);
 
-  console.log("cancelled bookings", cancelledBookings);
-  console.log("cancelled online bookings", cancelledOnlineBookings);
+  console.log('cancelled bookings', cancelledBookings);
+  console.log('cancelled online bookings', cancelledOnlineBookings);
   return (
-    <ContainerDefault title="Settings">
-      <HeaderDashboard title="Reports" description="Martfury Settings" />
-      <section className="ps-dashboard ps-items-listing">
-        <div className="ps-section__left">
-          <section className="ps-card">
-            <div className="ps-card__header">
+    <ContainerDefault title='Settings'>
+      <HeaderDashboard title='Reports' description='Dollup Settings' />
+      <section className='ps-dashboard ps-items-listing'>
+        <div className='ps-section__left'>
+          <section className='ps-card'>
+            <div className='ps-card__header'>
               <h4>Reports</h4>
             </div>
-            <div className="ps-card__content">
-              <div className="row">
-                <div className="col-md-5">
-                  <div className="form-group">
+            <div className='ps-card__content'>
+              <div className='row'>
+                <div className='col-md-5'>
+                  <div className='form-group'>
                     <label>Date</label>
                     <DatePicker
                       selected={selectedDay}
                       onChange={(date) => {
-                        console.log("date", date, date.format("MM/DD/YYYY"));
+                        console.log('date', date, date.format('MM/DD/YYYY'));
                         setSelectedDay(date);
                         if (date) {
                           setBookings(
                             originalBookings?.filter(
                               (booking) =>
                                 moment(booking.dateTime).format(
-                                  "MM/DD/YYYY"
-                                ) === date.format("MM/DD/YYYY")
+                                  'MM/DD/YYYY'
+                                ) === date.format('MM/DD/YYYY')
                             )
                           );
                         } else {
                           setBookings(originalBookings);
                         }
                       }}
-                      dateFormat="MM/dd/yyyy"
-                      wrapperClassName="form-control"
-                      className="form-control"
+                      dateFormat='MM/dd/yyyy'
+                      wrapperClassName='form-control'
+                      className='form-control'
                       fixedHeight={true}
                     />
                   </div>
                 </div>
-                <div className="col-md-5">
-                  <div className="form-group">
+                <div className='col-md-5'>
+                  <div className='form-group'>
                     <label>Stylist</label>
                     <Select
                       showSearch
-                      placeholder="Select a stylist"
-                      optionFilterProp="children"
-                      className="ps-ant-dropdown"
+                      placeholder='Select a stylist'
+                      optionFilterProp='children'
+                      className='ps-ant-dropdown'
                       onChange={(value) => {
                         setSelectedStylist(value);
                         if (value) {
@@ -293,12 +293,12 @@ const ReportsPage = ({ vendor, socket }) => {
                     </Select>
                   </div>
                 </div>
-                <div className="col-md-2">
-                  <div className="form-group">
+                <div className='col-md-2'>
+                  <div className='form-group'>
                     <label>Actions</label>
-                    <div className="d-flex flex-column">
+                    <div className='d-flex flex-column'>
                       <button
-                        className="btn btn-primary"
+                        className='btn btn-primary'
                         onClick={() => {
                           setBookings(originalBookings);
                           setSelectedDay(null);
@@ -308,7 +308,7 @@ const ReportsPage = ({ vendor, socket }) => {
                         Reset
                       </button>
                       <button
-                        className="btn btn-primary mt-2"
+                        className='btn btn-primary mt-2'
                         onClick={() => {
                           window.print();
                         }}
@@ -319,19 +319,19 @@ const ReportsPage = ({ vendor, socket }) => {
                   </div>
                 </div>
               </div>
-              <div className="row">
-                <div className="col-md-4  mb-4">
-                  <div className="card ">
-                    <div className="card-body stat-card-body">
-                      <div className="row title-row text-center">
-                        <div className="col-md-12 d-flex flex-column justify-content-center align-items-center">
+              <div className='row'>
+                <div className='col-md-4  mb-4'>
+                  <div className='card '>
+                    <div className='card-body stat-card-body'>
+                      <div className='row title-row text-center'>
+                        <div className='col-md-12 d-flex flex-column justify-content-center align-items-center'>
                           <Title level={3}>Total Bookings</Title>
                         </div>
-                        <div className="col-md-12 d-flex flex-column justify-content-center align-items-center">
+                        <div className='col-md-12 d-flex flex-column justify-content-center align-items-center'>
                           <h1>{bookings && bookings?.length}</h1>
                         </div>
                       </div>
-                      <table className="table table-hover">
+                      <table className='table table-hover'>
                         <tbody>
                           <tr>
                             <th>Online</th>
@@ -346,16 +346,16 @@ const ReportsPage = ({ vendor, socket }) => {
                     </div>
                   </div>
                 </div>
-                <div className="col-md-4  mb-4">
-                  <div className="card ">
-                    <div className="card-body stat-card-body">
-                      <div className="row title-row">
-                        <div className="col-md-12 d-flex flex-column justify-content-center align-items-center">
-                          <h3 className="card-title display-4 text-bold">
+                <div className='col-md-4  mb-4'>
+                  <div className='card '>
+                    <div className='card-body stat-card-body'>
+                      <div className='row title-row'>
+                        <div className='col-md-12 d-flex flex-column justify-content-center align-items-center'>
+                          <h3 className='card-title display-4 text-bold'>
                             <Title level={3}>Total Excl Commision</Title>
                           </h3>
                         </div>
-                        <div className="col-md-12 d-flex flex-column justify-content-center align-items-center">
+                        <div className='col-md-12 d-flex flex-column justify-content-center align-items-center'>
                           <h1>
                             R
                             {completedBookings &&
@@ -367,16 +367,16 @@ const ReportsPage = ({ vendor, socket }) => {
                           </h1>
                         </div>
                       </div>
-                      <table className="table table-hover">
+                      <table className='table table-hover'>
                         <tbody>
                           <tr>
                             <th>Online</th>
                             <td>
-                              R{" "}
+                              R{' '}
                               {completedOnlinBookings &&
                                 completedOnlinBookings
                                   .filter(
-                                    (booking) => booking.type === "online"
+                                    (booking) => booking.type === 'online'
                                   )
                                   .reduce(
                                     (total, booking) =>
@@ -389,11 +389,11 @@ const ReportsPage = ({ vendor, socket }) => {
                           <tr>
                             <th>Walk-In</th>
                             <td>
-                              R{" "}
+                              R{' '}
                               {completedWalkInBookings &&
                                 completedWalkInBookings
                                   .filter(
-                                    (booking) => booking.type === "walkin"
+                                    (booking) => booking.type === 'walkin'
                                   )
                                   .reduce(
                                     (total, booking) =>
@@ -408,14 +408,14 @@ const ReportsPage = ({ vendor, socket }) => {
                     </div>
                   </div>
                 </div>
-                <div className="col-md-4  mb-4">
-                  <div className="card ">
-                    <div className="card-body stat-card-body">
-                      <div className="row title-row">
-                        <div className="col-md-12 d-flex flex-column justify-content-center align-items-center">
+                <div className='col-md-4  mb-4'>
+                  <div className='card '>
+                    <div className='card-body stat-card-body'>
+                      <div className='row title-row'>
+                        <div className='col-md-12 d-flex flex-column justify-content-center align-items-center'>
                           <Title level={3}>Sale Average</Title>
                         </div>
-                        <div className="col-md-12 d-flex flex-column justify-content-center align-items-center">
+                        <div className='col-md-12 d-flex flex-column justify-content-center align-items-center'>
                           <h1>
                             R
                             {completedBookings && completedBookings?.length > 0
@@ -431,7 +431,7 @@ const ReportsPage = ({ vendor, socket }) => {
                           </h1>
                         </div>
                       </div>
-                      <table className="table table-hover">
+                      <table className='table table-hover'>
                         <tbody>
                           <tr>
                             <th>Sales</th>
@@ -444,24 +444,24 @@ const ReportsPage = ({ vendor, socket }) => {
                     </div>
                   </div>
                 </div>
-                <div className="col-md-4  mb-4">
-                  <div className="card ">
-                    <div className="card-body stat-card-body">
-                      <div className="row title-row">
-                        <div className="col-md-12 d-flex flex-column justify-content-center align-items-center">
+                <div className='col-md-4  mb-4'>
+                  <div className='card '>
+                    <div className='card-body stat-card-body'>
+                      <div className='row title-row'>
+                        <div className='col-md-12 d-flex flex-column justify-content-center align-items-center'>
                           <Title level={3}>Online Bookings</Title>
                         </div>
-                        <div className="col-md-12 d-flex flex-column justify-content-center align-items-center">
+                        <div className='col-md-12 d-flex flex-column justify-content-center align-items-center'>
                           <h1>{onlineBookings && onlineBookings?.length}</h1>
                         </div>
                       </div>
-                      <table className="table table-hover">
+                      <table className='table table-hover'>
                         <tbody>
                           <tr>
                             <th>Completed</th>
                             <td>
                               {completedOnlinBookings &&
-                                completedOnlinBookings?.length}{" "}
+                                completedOnlinBookings?.length}{' '}
                               ({completedOnlinBookingsPercentage}% )
                             </td>
                           </tr>
@@ -469,7 +469,7 @@ const ReportsPage = ({ vendor, socket }) => {
                             <th>Not Completed</th>
                             <td>
                               {incompleteOnlineBookings &&
-                                incompleteOnlineBookings?.length}{" "}
+                                incompleteOnlineBookings?.length}{' '}
                               ({incompleteOnlineBookingsPercentage}% )
                             </td>
                           </tr>
@@ -478,24 +478,24 @@ const ReportsPage = ({ vendor, socket }) => {
                     </div>
                   </div>
                 </div>
-                <div className="col-md-4  mb-4">
-                  <div className="card ">
-                    <div className="card-body stat-card-body">
-                      <div className="row title-row">
-                        <div className="col-md-12 d-flex flex-column justify-content-center align-items-center">
+                <div className='col-md-4  mb-4'>
+                  <div className='card '>
+                    <div className='card-body stat-card-body'>
+                      <div className='row title-row'>
+                        <div className='col-md-12 d-flex flex-column justify-content-center align-items-center'>
                           <Title level={3}>Walk-in Bookings</Title>
                         </div>
-                        <div className="col-md-12 d-flex flex-column justify-content-center align-items-center">
+                        <div className='col-md-12 d-flex flex-column justify-content-center align-items-center'>
                           <h1>{walkInBookings && walkInBookings?.length}</h1>
                         </div>
                       </div>
-                      <table className="table table-hover">
+                      <table className='table table-hover'>
                         <tbody>
                           <tr>
                             <th>Completed</th>
                             <td>
                               {completedWalkInBookings &&
-                                completedWalkInBookings?.length}{" "}
+                                completedWalkInBookings?.length}{' '}
                               ({completedWalkInBookingsPercentage}% )
                             </td>
                           </tr>
@@ -503,7 +503,7 @@ const ReportsPage = ({ vendor, socket }) => {
                             <th>Not Completed</th>
                             <td>
                               {incompleteWalkInBookings &&
-                                incompleteWalkInBookings?.length}{" "}
+                                incompleteWalkInBookings?.length}{' '}
                               ({incompleteWalkInBookingsPercentage}% )
                             </td>
                           </tr>
@@ -512,26 +512,26 @@ const ReportsPage = ({ vendor, socket }) => {
                     </div>
                   </div>
                 </div>
-                <div className="col-md-4  mb-4">
-                  <div className="card ">
-                    <div className="card-body stat-card-body">
-                      <div className="row title-row">
-                        <div className="col-md-12 d-flex flex-column justify-content-center align-items-center">
+                <div className='col-md-4  mb-4'>
+                  <div className='card '>
+                    <div className='card-body stat-card-body'>
+                      <div className='row title-row'>
+                        <div className='col-md-12 d-flex flex-column justify-content-center align-items-center'>
                           <Title level={3}>Cancelled Bookings</Title>
                         </div>
-                        <div className="col-md-12 d-flex flex-column justify-content-center align-items-center">
+                        <div className='col-md-12 d-flex flex-column justify-content-center align-items-center'>
                           <h1>
                             {cancelledBookings && cancelledBookings?.length}
                           </h1>
                         </div>
                       </div>
-                      <table className="table table-hover">
+                      <table className='table table-hover'>
                         <tbody>
                           <tr>
                             <th>Online</th>
                             <td>
                               {cancelledOnlineBookings &&
-                                cancelledOnlineBookings?.length}{" "}
+                                cancelledOnlineBookings?.length}{' '}
                               ({cancelledOnlineBookingsPercentage}% )
                             </td>
                           </tr>
@@ -539,7 +539,7 @@ const ReportsPage = ({ vendor, socket }) => {
                             <th>Walk-In</th>
                             <td>
                               {cancelledWalkInBookings &&
-                                cancelledWalkInBookings?.length}{" "}
+                                cancelledWalkInBookings?.length}{' '}
                               ({cancelledWalkInBookingsPercentage}% )
                             </td>
                           </tr>
@@ -548,30 +548,30 @@ const ReportsPage = ({ vendor, socket }) => {
                     </div>
                   </div>
                 </div>
-                <div className="col-md-4  mb-4">
-                  <div className="card ">
-                    <div className="card-body stat-card-body">
-                      <div className="row title-row">
-                        <div className="col-md-12 d-flex flex-column justify-content-center align-items-center">
+                <div className='col-md-4  mb-4'>
+                  <div className='card '>
+                    <div className='card-body stat-card-body'>
+                      <div className='row title-row'>
+                        <div className='col-md-12 d-flex flex-column justify-content-center align-items-center'>
                           <Title level={3}>Paid Bookings</Title>
                         </div>
-                        <div className="col-md-12 d-flex flex-column justify-content-center align-items-center">
+                        <div className='col-md-12 d-flex flex-column justify-content-center align-items-center'>
                           <h1>{paidBookings && paidBookings?.length}</h1>
                         </div>
                       </div>
-                      <table className="table table-hover">
+                      <table className='table table-hover'>
                         <tbody>
                           <tr>
                             <th>Online</th>
                             <td>
-                              {paidOnlineBookings && paidOnlineBookings?.length}{" "}
+                              {paidOnlineBookings && paidOnlineBookings?.length}{' '}
                               ({paidOnlineBookingsPercentage}% )
                             </td>
                           </tr>
                           <tr>
                             <th>Walk-In</th>
                             <td>
-                              {paidWalkInBookings && paidWalkInBookings?.length}{" "}
+                              {paidWalkInBookings && paidWalkInBookings?.length}{' '}
                               ({paidWalkInBookingsPercentage}% )
                             </td>
                           </tr>
@@ -580,24 +580,24 @@ const ReportsPage = ({ vendor, socket }) => {
                     </div>
                   </div>
                 </div>
-                <div className="col-md-4  mb-4">
-                  <div className="card ">
-                    <div className="card-body stat-card-body">
-                      <div className="row title-row">
-                        <div className="col-md-12 d-flex flex-column justify-content-center align-items-center">
+                <div className='col-md-4  mb-4'>
+                  <div className='card '>
+                    <div className='card-body stat-card-body'>
+                      <div className='row title-row'>
+                        <div className='col-md-12 d-flex flex-column justify-content-center align-items-center'>
                           <Title level={3}>No Show Bookings</Title>
                         </div>
-                        <div className="col-md-12 d-flex flex-column justify-content-center align-items-center">
+                        <div className='col-md-12 d-flex flex-column justify-content-center align-items-center'>
                           <h1>{noShowBookings && noShowBookings?.length}</h1>
                         </div>
                       </div>
-                      <table className="table table-hover">
+                      <table className='table table-hover'>
                         <tbody>
                           <tr>
                             <th>Online</th>
                             <td>
                               {noShowOnlineBookings &&
-                                noShowOnlineBookings?.length}{" "}
+                                noShowOnlineBookings?.length}{' '}
                               ({noShowOnlineBookingsPercentage}% )
                             </td>
                           </tr>
@@ -605,7 +605,7 @@ const ReportsPage = ({ vendor, socket }) => {
                             <th>Walk-In</th>
                             <td>
                               {noShowWalkInBookings &&
-                                noShowWalkInBookings?.length}{" "}
+                                noShowWalkInBookings?.length}{' '}
                               ({noShowWalkInBookingsPercentage}% )
                             </td>
                           </tr>
@@ -614,29 +614,29 @@ const ReportsPage = ({ vendor, socket }) => {
                     </div>
                   </div>
                 </div>
-                <div className="col-md-4  mb-4">
-                  <div className="card ">
-                    <div className="card-body stat-card-body">
-                      <div className="row title-row">
-                        <div className="col-md-12 d-flex flex-column justify-content-center align-items-center">
+                <div className='col-md-4  mb-4'>
+                  <div className='card '>
+                    <div className='card-body stat-card-body'>
+                      <div className='row title-row'>
+                        <div className='col-md-12 d-flex flex-column justify-content-center align-items-center'>
                           <Title level={3}>Time Booked</Title>
                         </div>
-                        <div className="col-md-12 d-flex flex-column justify-content-center align-items-center">
+                        <div className='col-md-12 d-flex flex-column justify-content-center align-items-center'>
                           <h1>
                             {moment
                               .utc(totalBookedDuration.asMilliseconds())
-                              .format("HH:mm")}
+                              .format('HH:mm')}
                           </h1>
                         </div>
                       </div>
-                      <table className="table table-striped table-hover">
+                      <table className='table table-striped table-hover'>
                         <tbody>
                           <tr>
                             <th>Complete</th>
                             <td>
                               {moment
                                 .utc(completedBookedDuration.asMilliseconds())
-                                .format("HH:mm")}{" "}
+                                .format('HH:mm')}{' '}
                               ({completedDurationPercentage}% )
                             </td>
                           </tr>
@@ -645,7 +645,7 @@ const ReportsPage = ({ vendor, socket }) => {
                             <td>
                               {moment
                                 .utc(incompletedBookedDuration.asMilliseconds())
-                                .format("HH:mm")}{" "}
+                                .format('HH:mm')}{' '}
                               ({incompletedDurationPercentage}% )
                             </td>
                           </tr>
@@ -655,11 +655,11 @@ const ReportsPage = ({ vendor, socket }) => {
                   </div>
                 </div>
               </div>
-              <div className="row mb-4 my-4">
-                <div className="col-md-12 my-4">
-                  <h3 className="display-3 my-4">Revenue Breakdown</h3>
-                  <p className="lead"> Only applies to completed bookings</p>
-                  <table className="table table-striped table-hover">
+              <div className='row mb-4 my-4'>
+                <div className='col-md-12 my-4'>
+                  <h3 className='display-3 my-4'>Revenue Breakdown</h3>
+                  <p className='lead'> Only applies to completed bookings</p>
+                  <table className='table table-striped table-hover'>
                     <thead>
                       <tr>
                         <th>Date</th>
@@ -677,11 +677,11 @@ const ReportsPage = ({ vendor, socket }) => {
                         completedBookings.map((booking, index) => (
                           <tr key={index}>
                             <td>
-                              {moment(booking.dateTime).format("DD/MM/YYYY")}
+                              {moment(booking.dateTime).format('DD/MM/YYYY')}
                             </td>
                             <td>{booking.service.name}</td>
                             <td>
-                              {booking.type === "walkin" ? "Walk-In" : "Online"}
+                              {booking.type === 'walkin' ? 'Walk-In' : 'Online'}
                             </td>
                             <td>{booking.stylist.name}</td>
                             <td>R{booking.service.salePrice}</td>
@@ -704,8 +704,8 @@ const ReportsPage = ({ vendor, socket }) => {
                         ))}
                     </tbody>
                   </table>
-                  <div className="w-100 d-flex flex-row align-items-end justify-content-end my-4">
-                    <div className="col-md-4 d-flex flex-column align-items-end justify-content-end my-4">
+                  <div className='w-100 d-flex flex-row align-items-end justify-content-end my-4'>
+                    <div className='col-md-4 d-flex flex-column align-items-end justify-content-end my-4'>
                       <p>
                         <strong>TOTAL</strong>
                       </p>
