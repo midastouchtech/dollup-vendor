@@ -32,9 +32,6 @@ const TableCustomerItems = ({ socket, customers }) => {
           <br />
           {moment(item?.lastBooking?.dateTime).format('DD/MM/YYYY')}
         </td>
-        <td>
-          <DropdownAction type='customers' id={item?.id} socket={socket} />
-        </td>
       </tr>
     );
   });
@@ -49,7 +46,6 @@ const TableCustomerItems = ({ socket, customers }) => {
             <th>Total Un-Paid</th>
             <th>Total Bookings</th>
             <th>Last Booking</th>
-            <th></th>
           </tr>
         </thead>
         <tbody>{tableItemsView}</tbody>

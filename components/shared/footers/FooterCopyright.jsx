@@ -1,14 +1,15 @@
 import React from 'react';
 
 const FooterCopyright = () => {
-    return (
-        <div className="ps-copyright">
-            <h3>Dollup MarketPlace</h3>
-            <p>
-                &copy;2020 Dollup marketplace. <br /> All rights reversed.
-            </p>
-        </div>
-    );
+  const currentYear = new Date().getFullYear();
+  return (
+    <div className='ps-copyright'>
+      <h3>Dollup</h3>
+      <small>Boutique salon booking</small>
+      <br />
+      <small>All rights reversed. &copy; {currentYear} Dollup .</small>
+    </div>
+  );
 };
 
 export default FooterCopyright;

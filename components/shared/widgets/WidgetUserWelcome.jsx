@@ -1,22 +1,24 @@
-import React from "react";
-import { connect } from "react-redux";
+import Link from 'next/link';
+import React from 'react';
+import { connect } from 'react-redux';
 
 const WidgetUserWelcome = ({ vendor }) => {
-  console.log("wdget vendor", vendor);
+  console.log('wdget vendor', vendor);
   return (
-    <div className="ps-block--user-wellcome">
-      <div className="ps-block__left">
-        <img src="/img/user/blank.png" alt="" style={{ maxWidth: "60px" }} />
+    <div className='ps-block--user-wellcome'>
+      <div className='ps-block__left'>
+        <img src={vendor?.avatar} alt='' style={{ maxWidth: '60px' }} />
       </div>
-      <div className="ps-block__right">
+      <div className='ps-block__right'>
         <p>
-          <a href="#">{vendor?.storeName}</a>
+          <a href='#'>{vendor?.storeName}</a>
         </p>
+        <small>{vendor?.email}</small>
       </div>
-      <div className="ps-block__action">
-        <a href="#">
-          <i className="icon-exit"></i>
-        </a>
+      <div className='ps-block__action'>
+        <Link href='/logout'>
+          <i className='icon-exit'></i>
+        </Link>
       </div>
     </div>
   );

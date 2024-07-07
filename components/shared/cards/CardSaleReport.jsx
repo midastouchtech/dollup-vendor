@@ -55,7 +55,7 @@ const CardSaleReport = ({ socket, vendor }) => {
       dataLabels: {
         enabled: false,
       },
-      colors: ['#fe0056', '#f9f9f9', '#9C27B0'],
+      colors: ['#eab308', '#f9f9f9', '#9C27B0'],
       stroke: {
         curve: 'smooth',
       },
