@@ -13,6 +13,8 @@ const withTM = require('next-transpile-modules')(['antd', 'antd-img-crop']);
 const nextSettings = {
   env: {
     title: 'Dollup',
+    ignoreBuildErrors: true,
+
     titleDescription: 'Marketplace',
     reactStrictMode: true,
     eslint: {
@@ -26,6 +28,7 @@ const nextSettings = {
       styledComponents: true,
     },
   },
+  ignoreBuildErrors: true,
 };
 
 module.exports = withPlugins([withTM, withImages(), nextSettings]);

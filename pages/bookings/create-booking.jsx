@@ -6,7 +6,6 @@ import { toggleDrawerMenu } from '~/store/app/action';
 import { Select, Form, notification } from 'antd';
 import { isEmpty, omit } from 'ramda';
 import { useRouter } from 'next/router';
-const short-uui
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import SearchAndSelectCustomer from '~/components/searchAndSelectCustomer';

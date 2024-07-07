@@ -23,7 +23,8 @@ const HeaderMobile = ({ isDrawerMenu }) => {
       <div className='header__right'>
         <a
           className='header__site-link'
-          href={process.env.NEXT_CLIENT_WEBSITE_URL}
+          target='_blank'
+          href={`${process.env.NEXT_PUBLIC_CLIENT_WEBSITE_URL}/`}
         >
           For customers <i className='icon-exit-right'></i>
         </a>

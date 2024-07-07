@@ -1,9 +1,11 @@
 import React from 'react';
 import FormHeaderSearch from '~/components/shared/forms/FormHeaderSearch';
+import { connect, useDispatch } from 'react-redux';
 
 const HeaderDashboard = ({
   title = 'Dashboard',
   description = 'Everything here',
+  vendor,
 }) => {
   return (
     <header className='header--dashboard'>
@@ -13,7 +15,11 @@ const HeaderDashboard = ({
       </div>
       <div className='header__center'></div>
       <div className='header__right'>
-        <a className='header__site-link' href='#'>
+        <a
+          className='header__site-link'
+          target='_blank'
+          href={`${process.env.NEXT_PUBLIC_CLIENT_WEBSITE_URL}/review/vendor?id=${vendor?.id}`}
+        >
           <span>View your store</span>
           <i className='icon-exit-right'></i>
         </a>
@@ -22,4 +28,4 @@ const HeaderDashboard = ({
   );
 };
 
-export default HeaderDashboard;
+export default connect((state) => state.app)(HeaderDashboard);
