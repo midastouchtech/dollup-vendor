@@ -1,5 +1,5 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React from 'react';
+import { useState, useEffect } from 'react';
 
 const PLATFORM_COMMISION = 0.2;
 
@@ -9,8 +9,8 @@ const CardStatics = ({ vendor, socket }) => {
 
   useEffect(() => {
     if (!bookings && socket && vendor) {
-      socket.emit("GET_VENDOR_BOOKINGS", { id: vendor.id });
-      socket.on("RECEIVE_VENDOR_BOOKINGS", (data) => {
+      socket.emit('GET_VENDOR_BOOKINGS', { id: vendor.id });
+      socket.on('RECEIVE_VENDOR_BOOKINGS', (data) => {
         setBookings(data);
       });
     }
@@ -23,13 +23,13 @@ const CardStatics = ({ vendor, socket }) => {
       const services = completedBookings.map((b) => b.service);
       let prices = {};
       services.forEach((s, i) => {
-        if (!prices[s.id]) {
-          prices[s.id] = {
-            name: s.name,
-            price: parseInt(s.salePrice),
+        if (!prices[s?.id]) {
+          prices[s?.id] = {
+            name: s?.name,
+            price: parseInt(s?.salePrice),
           };
         } else {
-          prices[s.id].price = prices[s.id].price + parseInt(s.salePrice);
+          prices[s?.id].price = prices[s?.id].price + parseInt(s?.salePrice);
         }
       });
       const data = Object.values(prices).map((p) => p.price);
@@ -42,8 +42,8 @@ const CardStatics = ({ vendor, socket }) => {
   const platformCommision = total * PLATFORM_COMMISION;
   const balance = total - stylistCommision - platformCommision;
   return (
-    <section className="ps-card ps-card--statics">
-      <div className="ps-card__header">
+    <section className='ps-card ps-card--statics'>
+      <div className='ps-card__header'>
         <h4>Statics</h4>
         {/* <div className="ps-card__sortby">
           <i className="icon-calendar-empty"></i>
@@ -57,14 +57,14 @@ const CardStatics = ({ vendor, socket }) => {
           </div>
         </div> */}
       </div>
-      <div className="ps-card__content">
-        <div className="ps-block--stat yellow">
-          <div className="ps-block__left">
+      <div className='ps-card__content'>
+        <div className='ps-block--stat yellow'>
+          <div className='ps-block__left'>
             <span>
-              <i className="icon-cart"></i>
+              <i className='icon-cart'></i>
             </span>
           </div>
-          <div className="ps-block__content">
+          <div className='ps-block__content'>
             <p>Complete Bookings</p>
             <h4>
               {completedBookings?.length}
@@ -75,13 +75,13 @@ const CardStatics = ({ vendor, socket }) => {
             </h4>
           </div>
         </div>
-        <div className="ps-block--stat pink">
-          <div className="ps-block__left">
+        <div className='ps-block--stat pink'>
+          <div className='ps-block__left'>
             <span>
-              <i className="icon-cart"></i>
+              <i className='icon-cart'></i>
             </span>
           </div>
-          <div className="ps-block__content">
+          <div className='ps-block__content'>
             <p>Revenue</p>
             <h4>
               R{total}
@@ -92,13 +92,13 @@ const CardStatics = ({ vendor, socket }) => {
             </h4>
           </div>
         </div>
-        <div className="ps-block--stat green">
-          <div className="ps-block__left">
+        <div className='ps-block--stat green'>
+          <div className='ps-block__left'>
             <span>
-              <i className="icon-cart"></i>
+              <i className='icon-cart'></i>
             </span>
           </div>
-          <div className="ps-block__content">
+          <div className='ps-block__content'>
             <p>Earning</p>
             <h4>
               R{balance}

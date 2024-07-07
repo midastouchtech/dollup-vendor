@@ -1,9 +1,9 @@
-import React from "react";
-import moment from "moment";
+import React from 'react';
+import moment from 'moment';
 
 const TableOrderSummary = ({ bookings }) => (
-  <div className="table-responsive">
-    <table className="table ps-table">
+  <div className='table-responsive'>
+    <table className='table ps-table'>
       <thead>
         <tr>
           <th>ID</th>
@@ -19,12 +19,12 @@ const TableOrderSummary = ({ bookings }) => (
         {bookings &&
           bookings.map((booking) => (
             <tr key={booking.id}>
-              <td>{booking.id.split("-")[0]}</td>
-              <td>{moment(booking.dateTime).format("DD MMM YYYY HH:mm")}</td>
-              <td>{booking.service.name}</td>
-              <td>{booking.isPaid ? "Paid" : "Not Paid"}</td>
-              <td>{booking.isComplete ? "Fullfilled" : "Not Fullfilled"}</td>
-              <td>R {booking.service.salePrice}</td>
+              <td>{booking.id.split('-')[0]}</td>
+              <td>{moment(booking.date).format('DD MMM YYYY HH:mm')}</td>
+              <td>{booking?.service?.name}</td>
+              <td>{booking?.isPaid ? 'Paid' : 'Not Paid'}</td>
+              <td>{booking?.isComplete ? 'Fullfilled' : 'Not Fullfilled'}</td>
+              <td>R {booking?.service?.salePrice}</td>
             </tr>
           ))}
       </tbody>

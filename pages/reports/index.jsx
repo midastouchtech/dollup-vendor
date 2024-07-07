@@ -242,9 +242,8 @@ const ReportsPage = ({ vendor, socket }) => {
                           setBookings(
                             originalBookings?.filter(
                               (booking) =>
-                                moment(booking.dateTime).format(
-                                  'MM/DD/YYYY'
-                                ) === date.format('MM/DD/YYYY')
+                                moment(booking.date).format('MM/DD/YYYY') ===
+                                date.format('MM/DD/YYYY')
                             )
                           );
                         } else {
@@ -676,9 +675,7 @@ const ReportsPage = ({ vendor, socket }) => {
                       {completedBookings &&
                         completedBookings.map((booking, index) => (
                           <tr key={index}>
-                            <td>
-                              {moment(booking.dateTime).format('DD/MM/YYYY')}
-                            </td>
+                            <td>{moment(booking.date).format('DD/MM/YYYY')}</td>
                             <td>{booking.service.name}</td>
                             <td>
                               {booking.type === 'walkin' ? 'Walk-In' : 'Online'}

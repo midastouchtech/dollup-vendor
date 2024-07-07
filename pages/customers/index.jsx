@@ -22,6 +22,7 @@ const CustomersPage = ({ socket, vendor }) => {
     socket.emit('GET_VENDOR_CUSTOMERS', { id: vendor.id });
     socket.on('RECEIVE_VENDOR_CUSTOMERS', (data) => {
       setCustomers(data);
+      console.log('customers', data);
       setOriginalCustomers(data);
     });
   }
@@ -36,6 +37,19 @@ const CustomersPage = ({ socket, vendor }) => {
           <div className='ps-section__filter'>
             <FormSearchSimple />
           </div>
+          <p
+            style={{
+              margin: '0px 20px',
+              padding: '15px',
+              background: '#f7f7f7',
+              fontSize: '10px',
+            }}
+          >
+            Please note the customers listed here will only be customers you
+            have had bookings with in the past. After adding a new customer
+            please go ahead and add booking data for them in order to see them
+            on this list
+          </p>
           <div className='ps-section__actions'>
             <Link className='ps-btn success' href='/customers/create-customer'>
               <i className='icon icon-plus mr-2'></i>Add Customer

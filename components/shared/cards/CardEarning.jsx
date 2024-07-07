@@ -1,10 +1,10 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import React from 'react';
+import { useEffect, useState } from 'react';
 
-const PLATFORM_COMMISION = 0.2;
+export const PLATFORM_COMMISION = 0.2;
 
-import dynamic from "next/dynamic";
-const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
+import dynamic from 'next/dynamic';
+const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 const CardEarning = ({ socket, vendor }) => {
   const [chartData, setChartData] = useState([]);
@@ -13,8 +13,8 @@ const CardEarning = ({ socket, vendor }) => {
 
   useEffect(() => {
     if (!bookings && socket && vendor) {
-      socket.emit("GET_VENDOR_BOOKINGS", { id: vendor.id });
-      socket.on("RECEIVE_VENDOR_BOOKINGS", (data) => {
+      socket.emit('GET_VENDOR_BOOKINGS', { id: vendor.id });
+      socket.on('RECEIVE_VENDOR_BOOKINGS', (data) => {
         setBookings(data);
       });
     }
@@ -22,20 +22,24 @@ const CardEarning = ({ socket, vendor }) => {
 
   useEffect(() => {
     if (bookings) {
-      const services = bookings.map((b) => b.service);
+      const services = bookings.map((b) => b.service).filter((s) => s);
+      console.log('services', services);
       let prices = {};
       services.forEach((s, i) => {
-        if (!prices[s.id]) {
-          prices[s.id] = {
+        if (s && !prices[s?.id]) {
+          prices[s?.id] = {
             name: s.name,
             price: parseInt(s.salePrice),
           };
-        } else {
-          prices[s.id].price = prices[s.id].price + parseInt(s.salePrice);
+        } else if (s) {
+          prices[s?.id].price = prices[s?.id]?.price + parseInt(s?.salePrice);
         }
       });
+      console.log('prices', prices);
       const data = Object.values(prices).map((p) => p.price);
       const categories = Object.values(prices).map((p) => p.name);
+      console.log('data', data);
+      console.log('categories', categories);
       setChartData(data);
       setChartCategories(categories);
     }
@@ -47,7 +51,7 @@ const CardEarning = ({ socket, vendor }) => {
     options: {
       chart: {
         height: 500,
-        type: "donut",
+        type: 'donut',
       },
       dataLabels: {
         enabled: false,
@@ -64,10 +68,10 @@ const CardEarning = ({ socket, vendor }) => {
           breakpoint: 480,
           options: {
             chart: {
-              width: "100%",
+              width: '100%',
             },
             legend: {
-              position: "bottom",
+              position: 'bottom',
             },
           },
         },
@@ -81,29 +85,29 @@ const CardEarning = ({ socket, vendor }) => {
   const balance = total - stylistCommision - platformCommision;
 
   return (
-    <div className="ps-card ps-card--earning">
-      <div className="ps-card__header">
+    <div className='ps-card ps-card--earning'>
+      <div className='ps-card__header'>
         <h4>Potential Earnings</h4>
       </div>
-      <div className="ps-card__content">
-        <div className="ps-card__chart">
-          <Chart options={state.options} series={state.series} type="donut" />
-          <div className="ps-card__information">
-            <i className="icon icon-wallet"></i>
+      <div className='ps-card__content'>
+        <div className='ps-card__chart'>
+          <Chart options={state.options} series={state.series} type='donut' />
+          <div className='ps-card__information'>
+            <i className='icon icon-wallet'></i>
             <strong>R{total}</strong>
             <small>Balance</small>
           </div>
         </div>
-        <div className="ps-card__status">
-          <p className="red">
+        <div className='ps-card__status'>
+          <p className='red'>
             <strong> - R {stylistCommision}</strong>
-            <span>Stylist Commission</span>
+            <span>Stylists</span>
           </p>
-          <p className="red">
+          <p className='red'>
             <strong> - R {platformCommision}</strong>
-            <span>Platform Commission</span>
+            <span>Platform</span>
           </p>
-          <p className="green">
+          <p className='green'>
             <strong> R {balance}</strong>
             <span>Net</span>
           </p>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import ContainerDefault from '~/components/layouts/ContainerDefault';
+import ContainerDashboard from '~/components/layouts/ContainerDashboard';
 import FormAccountSettings from '~/components/shared/forms/FormAccountSettings';
 import HeaderDashboard from '~/components/shared/headers/HeaderDashboard';
 import { connect, useDispatch } from 'react-redux';
@@ -12,7 +12,7 @@ const SettingsPage = ({ vendor, socket }) => {
     dispatch(toggleDrawerMenu(false));
   }, []);
   return (
-    <ContainerDefault title='Settings'>
+    <ContainerDashboard title='Settings'>
       <HeaderDashboard title='Settings' description='Dollup Settings' />
       <section className='ps-dashboard ps-items-listing'>
         <div className='ps-section__left'>
@@ -27,7 +27,7 @@ const SettingsPage = ({ vendor, socket }) => {
         </div>
         <div className='ps-section__right'></div>
       </section>
-    </ContainerDefault>
+    </ContainerDashboard>
   );
 };
 export default connect((state) => state.app)(SettingsPage);

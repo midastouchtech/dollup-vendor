@@ -1,7 +1,7 @@
 import React from 'react';
 import Upload from '~/components/upload';
 import AutoComplete from '~/components/autocomplete';
-import { Select } from 'antd';
+import { Select, Form, notification } from 'antd';
 
 const FormAccountSettings = ({ vendor, socket }) => {
   console.log('form', vendor);
@@ -12,10 +12,13 @@ const FormAccountSettings = ({ vendor, socket }) => {
     cell: '',
     address: '',
     bio: '',
+    category: '',
     avatar: '',
     bannerImages: [],
     ...vendor,
   });
+  const [subCategories, setSubCategories] = React.useState([]);
+
   const [updatedVendor, setUpdatedVendor] = React.useState(false);
 
   if (socket && !updatedVendor) {
@@ -25,8 +28,11 @@ const FormAccountSettings = ({ vendor, socket }) => {
       setUpdatedVendor(true);
       console.log('updatedvendor', data);
     });
+    socket.emit('GET_NEXT_PAGE_SUB_CATEGORIES', { page: 0, pageLimit: 250 });
+    socket.on('RECEIVE_NEXT_PAGE_SUB_CATEGORIES', (data) => {
+      setSubCategories(data.subCategories);
+    });
   }
-  console.log('details', details);
   const setDetail = (key, value) => {
     setDetails({
       ...details,
@@ -39,11 +45,15 @@ const FormAccountSettings = ({ vendor, socket }) => {
     socket.emit('UPDATE_VENDOR', { ...vendor, ...details });
     socket.on('UPDATE_VENDOR_SUCCESS', () => {
       console.log('Vendor update success');
+      notification.success({
+        key: 'vendore-edti',
+        message: 'Success!',
+        description: 'Your profile has been successfully updated',
+      });
     });
   };
-
-  console.log(details.address);
-
+  console.log('subcategories', subCategories);
+  console.log('details', details);
   return (
     <form className='ps-form--account-settings'>
       <div className='row'>
@@ -111,6 +121,25 @@ const FormAccountSettings = ({ vendor, socket }) => {
             />
           </div>
         </div>
+        <div className='col-sm-12'>
+          <div className='form-group'>
+            <label>Salon Main Category</label>
+            <Select
+              className='ps-ant-dropdown'
+              defaultValue={details?.category.id}
+              onChange={(value) => {
+                const category = subCategories.find((c) => c.id === value);
+                setDetail('category', category);
+              }}
+            >
+              {subCategories?.map((category) => (
+                <Select.Option key={category.id} value={category.id}>
+                  {category?.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </div>
+        </div>
 
         <div className='col-sm-12'>
           <div className='form-group'>
@@ -152,7 +181,13 @@ const FormAccountSettings = ({ vendor, socket }) => {
             <div className='ps-block__content'>
               <p>Please upload 1 square cropped image </p>
               <div className='form-group'>
-                <Upload onUploadComplete={(url) => setDetail('avatar', url)} />
+                <Upload
+                  existingFileList={
+                    details?.avatar ? [{ url: details.avatar }] : []
+                  }
+                  onExistingFileDelete={() => setDetail('avatar', '')}
+                  onUploadComplete={(url) => setDetail('avatar', url)}
+                />
               </div>
             </div>
           </figure>
@@ -162,11 +197,22 @@ const FormAccountSettings = ({ vendor, socket }) => {
             <figcaption>Salon banner images</figcaption>
             <div className='ps-block__content'>
               <p>
-                Please upload up to 3 images. Images must have 1650 × 650
+                Please upload up to 4 images. Images must have 1650 × 650
                 dimensions{' '}
               </p>
               <div className='form-group'>
                 <Upload
+                  existingFileList={
+                    details?.bannerImages
+                      ? details.bannerImages.map((i) => ({ url: i }))
+                      : []
+                  }
+                  onExistingFileDelete={(img) => {
+                    const images = details?.bannerImages ?? [];
+                    console.log('removing', img);
+                    const bannerImages = images.filter((i) => i !== img.url);
+                    setDetail('bannerImages', bannerImages);
+                  }}
                   onUploadComplete={(url) => {
                     const images = details?.bannerImages ?? [];
                     const bannerImages = [...images, url];

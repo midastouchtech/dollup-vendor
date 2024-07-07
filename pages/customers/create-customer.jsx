@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from "react";
-import ContainerDashboard from "~/components/layouts/ContainerDashboard";
-import Upload from "~/components/upload";
-import HeaderDashboard from "~/components/shared/headers/HeaderDashboard";
-import { connect, useDispatch } from "react-redux";
-import { toggleDrawerMenu } from "~/store/app/action";
-import categories from "~/public/data/categories.json";
-import { Select, Form, notification } from "antd";
-import { isEmpty } from "ramda";
-import { useRouter } from "next/router";
-import AutoComplete from "~/components/autocomplete";
-const { uuid } = require("uuidv4");
+import React, { useEffect, useState } from 'react';
+import ContainerDashboard from '~/components/layouts/ContainerDashboard';
+import Upload from '~/components/upload';
+import HeaderDashboard from '~/components/shared/headers/HeaderDashboard';
+import { connect, useDispatch } from 'react-redux';
+import { toggleDrawerMenu } from '~/store/app/action';
+import categories from '~/public/data/categories.json';
+import { Select, Form, notification } from 'antd';
+import { isEmpty } from 'ramda';
+import { useRouter } from 'next/router';
+import AutoComplete from '~/components/autocomplete';
+const { uuid } = require('uuidv4');
 
 // import {  Upload } from 'antd';
 
 const CreateServicePage = ({ vendor, socket }) => {
   const router = useRouter();
 
-  console.log("vendor", vendor);
+  console.log('vendor', vendor);
   const dispatch = useDispatch();
   const [details, setDetails] = useState({});
 
@@ -35,150 +35,180 @@ const CreateServicePage = ({ vendor, socket }) => {
     notification.destroy(details.name);
     console.log(details);
     if (socket && !isEmpty(details)) {
-      socket.emit("CREATE_VENDOR_CUSTOMER", {
-        associatedVendors: [vendor],
+      socket.emit('CREATE_VENDOR_CUSTOMER', {
         active: true,
         dateAdded: new Date(),
-        id: uuid(),
+        creator: {
+          id: vendor.id,
+          name: vendor.fullName,
+          storeName: vendor.storeName,
+          type: 'vendor',
+        },
         ...details,
       });
-      socket.on("RECEIVE_CREATE_VENDOR_CUSTOMER_SUCCESS", () => {
+      socket.on('RECEIVE_CREATE_VENDOR_CUSTOMER_SUCCESS', () => {
         notification.success({
           key: details.name,
-          message: "Success!",
-          description: "Your new customer has been added to your store!",
+          message: 'Success!',
+          description: 'Your new customer has been added to your store!',
         });
-        router.push("/customers");
+        router.push('/customers');
       });
-      socket.on("RECEIVE_CREATE_VENDOR_CUSTOMER_ERROR", () => {
+      socket.on('RECEIVE_CREATE_VENDOR_CUSTOMER_ERROR', () => {
         notification.error({
           key: details.name,
-          message: "Something went wrong.",
-          description: "Your new Service could not be added to your store.",
+          message: 'Something went wrong.',
+          description: 'Your new Service could not be added to your store.',
         });
       });
     }
   };
 
   return (
-    <ContainerDashboard title="Create new product">
+    <ContainerDashboard title='Create new product'>
       <HeaderDashboard
-        title="Create Customer"
-        description="Dollup Create New Customer "
+        title='Create Customer'
+        description='Dollup Create New Customer '
       />
-      <section className="ps-new-item">
-        <Form className="ps-form ps-form--new-product">
-          <div className="ps-form__content">
-            <div className="row">
-              <div className="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-                <figure className="ps-block--form-box">
+      <section className='ps-new-item'>
+        <Form className='ps-form ps-form--new-product'>
+          <div className='ps-form__content'>
+            <div className='row'>
+              <div className='col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12'>
+                <figure className='ps-block--form-box'>
                   <figcaption>General</figcaption>
-                  <div className="ps-block__content">
-                    <div className="form-group">
+                  <div className='ps-block__content'>
+                    <div className='form-group'>
                       <label>
-                        Customer Name<sup>*</sup>
+                        First Name<sup>*</sup>
                       </label>
                       <Form.Item
-                        name="customerName"
+                        name='firstName'
                         rules={[
                           {
                             required: true,
-                            message: "Please input customer name",
+                            message: 'Please input customer name',
                           },
                         ]}
                       >
                         <input
-                          className="form-control"
-                          type="text"
-                          placeholder="Enter customer name..."
-                          value={details.name}
-                          onChange={(e) => setDetail("name", e.target.value)}
-                        />
-                      </Form.Item>
-                    </div>
-                    <div className="form-group">
-                      <label>
-                        Phone number<sup>*</sup>
-                      </label>
-                      <Form.Item
-                        name="phoneNumber"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please input customer phone number",
-                          },
-                        ]}
-                      >
-                        <input
-                          className="form-control"
-                          type="text"
-                          placeholder="Enter phone number..."
-                          value={details.phoneNumber}
+                          className='form-control'
+                          type='text'
+                          placeholder='Enter customer first name...'
+                          value={details.firstName}
                           onChange={(e) =>
-                            setDetail("phoneNumber", e.target.value)
+                            setDetail('firstName', e.target.value)
                           }
                         />
                       </Form.Item>
                     </div>
-                    <div className="form-group">
+                    <div className='form-group'>
+                      <label>
+                        Last Name<sup>*</sup>
+                      </label>
+                      <Form.Item
+                        name='lastName'
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Please input customer name',
+                          },
+                        ]}
+                      >
+                        <input
+                          className='form-control'
+                          type='text'
+                          placeholder='Enter customer last name...'
+                          value={details.lastName}
+                          onChange={(e) =>
+                            setDetail('lastName', e.target.value)
+                          }
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className='form-group'>
+                      <label>
+                        Phone number<sup>*</sup>
+                      </label>
+                      <Form.Item
+                        name='cellphone'
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Please input customer phone number',
+                          },
+                        ]}
+                      >
+                        <input
+                          className='form-control'
+                          type='text'
+                          placeholder='Enter cellphone number...'
+                          value={details.cellphone}
+                          onChange={(e) =>
+                            setDetail('cellphone', e.target.value)
+                          }
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className='form-group'>
                       <label>
                         Email<sup>*</sup>
                       </label>
                       <Form.Item
-                        name="email"
+                        name='email'
                         rules={[
                           {
                             required: true,
-                            message: "Please input customer phone number",
+                            message: 'Please input customer phone number',
                           },
                         ]}
                       >
                         <input
-                          className="form-control"
-                          type="text"
-                          placeholder="Enter email..."
+                          className='form-control'
+                          type='text'
+                          placeholder='Enter email...'
                           value={details.email}
-                          onChange={(e) => setDetail("email", e.target.value)}
+                          onChange={(e) => setDetail('email', e.target.value)}
                         />
                       </Form.Item>
                     </div>
-                    <div className="form-group">
+                    <div className='form-group'>
                       <label>
                         Password<sup>*</sup>
                       </label>
                       <Form.Item
-                        name="password"
+                        name='password'
                         rules={[
                           {
                             required: true,
-                            message: "Please input customer phone number",
+                            message: 'Please input customer phone number',
                           },
                         ]}
                       >
                         <input
-                          className="form-control"
-                          type="text"
-                          placeholder="Enter email..."
+                          className='form-control'
+                          type='text'
+                          placeholder='Enter email...'
                           value={details.password}
                           onChange={(e) =>
-                            setDetail("password", e.target.value)
+                            setDetail('password', e.target.value)
                           }
                         />
                       </Form.Item>
                     </div>
 
-                    <div className="form-group">
+                    <div className='form-group'>
                       <label>
                         Address<sup>*</sup>
                       </label>
                       <AutoComplete
-                        value={details?.address}
-                        onChange={(v) => setDetail("address", v)}
+                        value={details?.place}
+                        onChange={(v) => setDetail('place', v)}
                         onSelect={(v, l) => {
                           setDetails({
                             ...details,
-                            ["address"]: v,
-                            ["location"]: { coordinates: l }
+                            ['place']: v,
+                            ['location']: { type: 'Point', coordinates: l },
                           });
                         }}
                       />
@@ -186,13 +216,13 @@ const CreateServicePage = ({ vendor, socket }) => {
                   </div>
                 </figure>
               </div>
-              <div className="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-                <figure className="ps-block--form-box">
+              <div className='col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12'>
+                <figure className='ps-block--form-box'>
                   <figcaption>Profile Image</figcaption>
-                  <div className="ps-block__content">
-                    <div className="form-group">
+                  <div className='ps-block__content'>
+                    <div className='form-group'>
                       <Upload
-                        onUploadComplete={(url) => setDetail("avatar", url)}
+                        onUploadComplete={(url) => setDetail('avatar', url)}
                       />
                     </div>
                   </div>
@@ -200,12 +230,12 @@ const CreateServicePage = ({ vendor, socket }) => {
               </div>
             </div>
           </div>
-          <div className="ps-form__bottom">
-            <a className="ps-btn ps-btn--black" href="products.html">
+          <div className='ps-form__bottom'>
+            <a className='ps-btn ps-btn--black' href='products.html'>
               Back
             </a>
-            <button className="ps-btn ps-btn--gray">Cancel</button>
-            <button className="ps-btn" onClick={handleSubmit}>
+            <button className='ps-btn ps-btn--gray'>Cancel</button>
+            <button className='ps-btn' onClick={handleSubmit}>
               Submit
             </button>
           </div>
