@@ -5,7 +5,7 @@ const FooterCopyright = () => {
   return (
     <div className='ps-copyright'>
       <h3>Dollup</h3>
-      <small>Boutique salon booking</small>
+      <small> Beauty Services Bookings</small>
       <br />
       <small>All rights reversed. &copy; {currentYear} Dollup .</small>
     </div>
