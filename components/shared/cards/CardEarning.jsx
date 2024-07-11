@@ -79,10 +79,12 @@ const CardEarning = ({ socket, vendor }) => {
     },
   };
 
-  const total = chartData.reduce((acc, curr) => acc + curr, 0);
-  const stylistCommision = total * (parseInt(vendor?.stylistCommision) / 100);
-  const platformCommision = total * PLATFORM_COMMISION;
-  const balance = total - stylistCommision - platformCommision;
+  const total = Math.round(chartData.reduce((acc, curr) => acc + curr, 0));
+  const stylistCommision = Math.round(
+    total * (parseInt(vendor?.stylistCommision) / 100)
+  );
+  const platformCommision = Math.round(total * PLATFORM_COMMISION);
+  const balance = Math.round(total - stylistCommision - platformCommision);
 
   return (
     <div className='ps-card ps-card--earning'>
