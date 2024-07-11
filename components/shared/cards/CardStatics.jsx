@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 
-const PLATFORM_COMMISION = 0.2;
+const PLATFORM_COMMISION = 0.1;
 
 const CardStatics = ({ vendor, socket }) => {
   const [chartData, setChartData] = useState([]);

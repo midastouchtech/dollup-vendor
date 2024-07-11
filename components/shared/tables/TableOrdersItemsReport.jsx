@@ -4,6 +4,16 @@ import { Menu } from 'antd';
 import DropdownAction from '~/components/elements/basic/DropdownAction';
 import moment from 'moment';
 import { PLATFORM_COMMISION } from '../cards/CardEarning';
+import styled from 'styled-components';
+
+const StyledTFOOT = styled.tfoot`
+  width: 100%;
+  td {
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+`;
 
 const TableOrdersItems = ({ socket, bookings, vendor }) => {
   const tableItemsView = bookings?.map((item) => {
@@ -24,24 +34,23 @@ const TableOrdersItems = ({ socket, bookings, vendor }) => {
       </Menu>
     );
     if (item.isPaid) {
-      badgeView = <span className='ps-badge success'>Paid</span>;
+      badgeView = <span className='ps-badge success'>PAID</span>;
     } else {
-      badgeView = <span className='ps-badge gray'>Unpaid</span>;
+      badgeView = <span className='ps-badge danger'>UNPAID</span>;
     }
     if (item.isComplete) {
       fullfillmentView = (
-        <span className='ps-fullfillment success'>Completed</span>
+        <span className='ps-fullfillment success'>COMPLETE</span>
       );
     } else if (item.isCancelled) {
       fullfillmentView = (
-        <span className='ps-fullfillment danger'>Cancelled</span>
+        <span className='ps-fullfillment danger'>CANCELLED</span>
       );
     } else {
       fullfillmentView = (
-        <span className='ps-fullfillment warning'>Pending</span>
+        <span className='ps-fullfillment warning'>PENDING</span>
       );
     }
-    console.log('table bookings', bookings);
     const stylistCommision =
       (item?.service?.salePrice || 0) *
       (parseInt(vendor?.stylistCommision) / 100);
@@ -49,22 +58,21 @@ const TableOrdersItems = ({ socket, bookings, vendor }) => {
       (item?.service?.salePrice || 0) * PLATFORM_COMMISION;
     const net =
       (item?.service?.salePrice || 0) - stylistCommision - platformCommision;
+    const rowClass = item.isComplete
+      ? 'complete-row'
+      : item.isCancelled
+      ? 'cancelled-row'
+      : 'pending-row';
     return (
-      <tr key={item?.id}>
+      <tr key={item?.id} className={`${rowClass}`}>
+        <td>{item?.searchIndex}</td>
         <td>
-          <small> {moment(item?.dateTime).format('DD MMM YYYY')}</small>
+          <small> {moment(item?.date).format('DD MMM YYYY')}</small>
         </td>
         <td>
           <Link href='/bookings/order-detail'>
             <small>
               <strong>{`${item?.user?.firstName} ${item?.user?.lastName}`}</strong>
-            </small>
-          </Link>
-        </td>
-        <td>
-          <Link href='/bookings/order-detail'>
-            <small>
-              <strong>{item?.service?.name}</strong>
             </small>
           </Link>
         </td>
@@ -77,25 +85,10 @@ const TableOrdersItems = ({ socket, bookings, vendor }) => {
         </td>
         <td>{badgeView}</td>
         <td>{fullfillmentView}</td>
-        <td>
-          <Link href='/bookings/order-detail'>
-            <small>
-              <strong>{item?.time}</strong>
-            </small>
-          </Link>
-        </td>
-        <td>
-          <strong>R{item?.service?.salePrice ?? 0}</strong>
-        </td>
-        <td>
-          <strong>R{stylistCommision}</strong>
-        </td>
-        <td>
-          <strong>R{platformCommision}</strong>
-        </td>
-        <td>
-          <strong>R{net}</strong>
-        </td>
+        <td>R{item?.service?.salePrice ?? 0}</td>
+        <td>R{stylistCommision}</td>
+        <td>R{platformCommision}</td>
+        <td>R{net}</td>
         <td>
           <DropdownAction socket={socket} id={item.id} type='bookings' />
         </td>
@@ -107,13 +100,12 @@ const TableOrdersItems = ({ socket, bookings, vendor }) => {
       <table className='table ps-table'>
         <thead>
           <tr>
+            <th>#</th>
             <th>Date</th>
             <th>Customer</th>
-            <th>Service</th>
             <th>Stylist</th>
             <th>Paid</th>
             <th>Fullfillment</th>
-            <th>Time</th>
             <th>Gross</th>
             <th>Stylist</th>
             <th>Platform</th>
@@ -122,21 +114,22 @@ const TableOrdersItems = ({ socket, bookings, vendor }) => {
           </tr>
         </thead>
         <tbody>{tableItemsView}</tbody>
-        <tfoot>
+        <StyledTFOOT>
           <tr>
-            <td colSpan='7'>
+            <td colSpan='5'>
               <strong>Total</strong>
             </td>
+            <td></td>
             <td colSpan='1'>
               <strong>
                 R{' '}
                 {bookings?.length > 0 ? (
-                  <span>
+                  <>
                     {bookings?.reduce(
                       (acc, curr) => acc + parseFloat(curr?.service?.salePrice),
                       0
                     )}
-                  </span>
+                  </>
                 ) : (
                   <span>0</span>
                 )}
@@ -146,7 +139,7 @@ const TableOrdersItems = ({ socket, bookings, vendor }) => {
               <strong>
                 R{' '}
                 {bookings?.length > 0 ? (
-                  <span>
+                  <>
                     {bookings?.reduce(
                       (acc, curr) =>
                         acc +
@@ -154,7 +147,7 @@ const TableOrdersItems = ({ socket, bookings, vendor }) => {
                           (parseFloat(vendor?.stylistCommision) / 100),
                       0
                     )}
-                  </span>
+                  </>
                 ) : (
                   <span>0</span>
                 )}
@@ -164,7 +157,7 @@ const TableOrdersItems = ({ socket, bookings, vendor }) => {
               <strong>
                 R{' '}
                 {bookings?.length > 0 ? (
-                  <span>
+                  <>
                     {bookings?.reduce(
                       (acc, curr) =>
                         acc +
@@ -172,7 +165,7 @@ const TableOrdersItems = ({ socket, bookings, vendor }) => {
                           PLATFORM_COMMISION,
                       0
                     )}
-                  </span>
+                  </>
                 ) : (
                   <span>0</span>
                 )}
@@ -182,7 +175,7 @@ const TableOrdersItems = ({ socket, bookings, vendor }) => {
               <strong>
                 R{' '}
                 {bookings?.length > 0 ? (
-                  <span>
+                  <>
                     {bookings?.reduce((acc, curr) => {
                       const stylistCommision =
                         parseFloat(curr?.service?.salePrice) *
@@ -196,14 +189,15 @@ const TableOrdersItems = ({ socket, bookings, vendor }) => {
                         platformCommision;
                       return acc + net;
                     }, 0)}
-                  </span>
+                  </>
                 ) : (
                   <span>0</span>
                 )}
               </strong>
             </td>
+            <td></td>
           </tr>
-        </tfoot>
+        </StyledTFOOT>
       </table>
     </div>
   );

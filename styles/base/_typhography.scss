@@ -159,6 +159,11 @@ figure {
     color: #666666;
     background-color: #e9e9e9;
   }
+
+  &.danger {
+    color: #e50202;
+    background-color: #f9e8e8;
+  }
 }
 
 .ps-fullfillment {
@@ -178,18 +183,21 @@ figure {
   }
 
   &.success {
+    color: #89ce00;
     &:before {
       background-color: #89ce00;
     }
   }
 
   &.warning {
+    color: #eab308;
     &:before {
       background-color: #eab308;
     }
   }
 
   &.danger {
+    color: #e50202;
     &:before {
       background-color: #e50202;
     }

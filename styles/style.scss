@@ -201,3 +201,24 @@
 .ps-main__sidebar {
   background-color: #1b7b9f;
 }
+
+.complete-row {
+  td {
+    background-color: #ebf7db73 !important;
+  }
+  border: 1px solid #d1f0d1;
+}
+
+.pending-row {
+  td {
+    background-color: #f7e3a02b !important;
+  }
+  border: 1px solid #ffa50038;
+}
+
+.cancelled-row {
+  td {
+    background-color: #d9888817 !important;
+  }
+  border: 1px solid #ff000029;
+}

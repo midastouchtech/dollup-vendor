@@ -3,7 +3,7 @@ import ContainerDashboard from '~/components/layouts/ContainerDashboard';
 import HeaderDashboard from '~/components/shared/headers/HeaderDashboard';
 import { connect, useDispatch } from 'react-redux';
 import { toggleDrawerMenu } from '~/store/app/action';
-import { Select, Form, notification } from 'antd';
+import { Select, Form } from 'antd';
 import { isEmpty, omit } from 'ramda';
 import { useRouter } from 'next/router';
 import DatePicker from 'react-datepicker';
@@ -11,6 +11,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import SearchAndSelectCustomer from '~/components/searchAndSelectCustomer';
 import styled from 'styled-components';
 import ShortUniqueId from 'short-unique-id';
+import notification from '~/components/notification';
 
 const uid = new ShortUniqueId({ length: 10 });
 
@@ -75,7 +76,6 @@ const CreateBookingPage = ({ vendor, socket }) => {
 
   const handleSubmit = () => {
     const id = uid.rnd();
-    notification.destroy(id);
     if (socket && !isEmpty(details)) {
       const booking = {
         vendor: vendor,
@@ -105,19 +105,14 @@ const CreateBookingPage = ({ vendor, socket }) => {
       console.log('booking', booking);
       socket.emit('CREATE_BOOKING', booking);
       socket.on('RECEIVE_CREATE_BOOKING_SUCCESS', () => {
-        notification.success({
-          key: details.name,
-          message: 'Success!',
-          description: 'Your new booking has been added to your store!',
-        });
+        notification.success('Your new booking has been added to your store!');
         router.push('/bookings');
       });
       socket.on('RECEIVE_CREATE_BOOKING_ERROR', () => {
-        notification.error({
-          key: details.name,
-          message: 'Something went wrong.',
-          description: 'Your new booking could not be created.',
-        });
+        notification.error(
+          'Your new booking could not be created.',
+          'Please try again later'
+        );
       });
     }
   };

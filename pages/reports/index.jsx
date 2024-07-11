@@ -12,7 +12,7 @@ import { Card } from 'antd';
 
 const { Title } = Typography;
 
-const PLATFORM_COMMISION = 0.2;
+const PLATFORM_COMMISION = 0.1;
 
 const ReportsPage = ({ vendor, socket }) => {
   const dispatch = useDispatch();

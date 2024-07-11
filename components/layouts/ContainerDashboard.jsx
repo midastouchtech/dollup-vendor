@@ -19,7 +19,6 @@ const exists = (i) => !isNil(i) && !isEmpty(i);
 const ContainerDashboard = ({ children, title, socket, vendor }) => {
   const dispatch = useDispatch();
   const cookieVendor = cookies.get('dollup_logged_in_vendor');
-  console.log('cookieVendor', cookieVendor);
   if (cookieVendor && !exists(vendor)) {
     dispatch(saveVendor(JSON.parse(cookieVendor)));
   } else if (!exists(cookieVendor) && !exists(vendor)) {

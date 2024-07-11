@@ -12,6 +12,24 @@ import moment from 'moment';
 import { Modal } from 'antd';
 import { Button, Checkbox, Form, Input } from 'antd';
 import { useRouter } from 'next/router';
+import styled from 'styled-components';
+import { find, range } from 'ramda';
+
+const SearchBox = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  width: 60%;
+  .ant-select-arrow {
+    top: 30%;
+  }
+`;
+
+const SegmentedButtonsContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+`;
 
 const localizer = momentLocalizer(moment);
 const { Option } = Select;
@@ -22,6 +40,10 @@ const OrdersPage = ({ vendor, socket }) => {
   const [bookings, setBookings] = useState();
   const [originalBookings, setOriginalBookings] = useState([]);
   const [selectedEvent, selectEvent] = useState({});
+  const [selectedTab, setSelectedTab] = useState('all');
+  const [bookingType, setBookingType] = useState('all');
+  const [page, setPage] = useState(0);
+  const [pageLimit, setPageLimit] = useState(10);
 
   useEffect(() => {
     dispatch(toggleDrawerMenu(false));
@@ -34,6 +56,29 @@ const OrdersPage = ({ vendor, socket }) => {
     }
   }, []);
 
+  const findBookings = () => {
+    const searchParams = {
+      bookingType,
+      timePeriod: selectedTab,
+      page,
+      pageLimit,
+    };
+    console.log('finding page', page);
+    socket.emit('GET_VENDOR_BOOKINGS', {
+      id: vendor.id,
+      searchParams,
+    });
+    socket.on('RECEIVE_VENDOR_BOOKINGS', (data) => {
+      setBookings(data);
+      setOriginalBookings(data);
+    });
+  };
+
+  useEffect(() => {
+    console.log('page changed to', page);
+    findBookings();
+  }, [page]);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => {
@@ -45,8 +90,6 @@ const OrdersPage = ({ vendor, socket }) => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-
-  console.log('bookings', bookings);
 
   const events = bookings?.map((b) => ({
     id: b?.id,
@@ -65,6 +108,17 @@ const OrdersPage = ({ vendor, socket }) => {
     selectEvent(calEvent);
     showModal();
   }, []);
+
+  const tabs = ['all', 'today', 'week', 'month'];
+  const bookingTypes = [
+    'all',
+    'completed',
+    'pending',
+    'cancelled',
+    'paid',
+    'unpaid',
+  ];
+  const pageLimits = [2, 3, 5, 10, 20, 50, 100];
 
   return (
     <ContainerDashboard>
@@ -174,6 +228,46 @@ const OrdersPage = ({ vendor, socket }) => {
         </Form>
       </Modal>
 
+      <SearchBox className='ps-section__actions'>
+        <SegmentedButtonsContainer>
+          {tabs.map((tab) => (
+            <Button
+              key={tab}
+              onClick={() => setSelectedTab(tab)}
+              type={selectedTab === tab ? 'primary' : ''}
+            >
+              {tab}
+            </Button>
+          ))}
+        </SegmentedButtonsContainer>
+        <Select
+          defaultValue='all'
+          style={{ width: 120 }}
+          onChange={(value) => setBookingType(value)}
+        >
+          {bookingTypes.map((type) => (
+            <Option key={type} value={type}>
+              {type}
+            </Option>
+          ))}
+        </Select>
+        <Select
+          defaultValue={10}
+          style={{ width: 120 }}
+          onChange={(value) => setPageLimit(value)}
+        >
+          {pageLimits.map((limit) => (
+            <Option key={limit} value={limit}>
+              {limit}
+            </Option>
+          ))}
+        </Select>
+        <Button type='warning' onClick={findBookings}>
+          {' '}
+          Find
+        </Button>
+      </SearchBox>
+
       <section className='ps-items-listing'>
         <div className='ps-section__content'>
           <TableOrdersItemsReport
@@ -181,6 +275,43 @@ const OrdersPage = ({ vendor, socket }) => {
             bookings={bookings}
             vendor={vendor}
           />
+        </div>
+        <div className='ps-section__footer'>
+          <p>Viewed {pageLimit * (page + 1)} items.</p>
+          <ul className='pagination'>
+            <li>
+              <a
+                href='#'
+                onClick={() => {
+                  setPage(page === 0 ? 0 : page - 1);
+                }}
+              >
+                <i className='icon icon-chevron-left'></i>
+              </a>
+            </li>
+            {range(page + 1, page + 2).map((p) => (
+              <li className={page + 1 === p ? 'active' : ''}>
+                <a
+                  href='#'
+                  onClick={() => {
+                    setPage(p);
+                  }}
+                >
+                  {p}
+                </a>
+              </li>
+            ))}
+            <li>
+              <a
+                href='#'
+                onClick={() => {
+                  setPage(page + 1);
+                }}
+              >
+                <i className='icon-chevron-right'></i>
+              </a>
+            </li>
+          </ul>
         </div>
       </section>
     </ContainerDashboard>

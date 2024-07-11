@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 
-export const PLATFORM_COMMISION = 0.2;
+export const PLATFORM_COMMISION = 0.1;
 
 import dynamic from 'next/dynamic';
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
