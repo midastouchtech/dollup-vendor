@@ -39,7 +39,7 @@ const StyleSheets = () => (
     />
     <meta
       property='og:image'
-      content='https://www.vendors.touch.net.za/og.jpg'
+      content='https://www.vendors.touch.net.za/og.png'
     />
     <meta property='og:url' content='https://www.vendors.touch.net.za' />
     <meta property='og:type' content='website' />
@@ -56,7 +56,7 @@ const StyleSheets = () => (
     />
     <meta
       name='twitter:image'
-      content='https://www.vendors.touch.net.za/og.jpg'
+      content='https://www.vendors.touch.net.za/og.png'
     />
     <meta name='twitter:site' content='@DollupBusiness' />
     <meta name='twitter:creator' content='@DollupBusiness' />
