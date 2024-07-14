@@ -251,8 +251,6 @@ const Chat = ({ vendor }) => {
               theme='light'
               inlineCollapsed={menuVisible}
               items={[
-                { key: '1', icon: '', label: 'New Chat' },
-                { key: '2', icon: '', label: 'Refresh' },
                 {
                   key: 'stylistchats',
                   label: 'Stylist Chats',
@@ -308,9 +306,16 @@ const Chat = ({ vendor }) => {
                   height: 64,
                 }}
               />
-              Chat with{' '}
+              Chat
               {selectedConversation?.with?.name ||
-                selectedConversation?.with?.storeName}
+                (selectedConversation?.with?.storeName && (
+                  <span>
+                    {' '}
+                    with{' '}
+                    {selectedConversation?.user?.name ||
+                      selectedConversation?.user?.storeName}
+                  </span>
+                ))}
             </Header>
             <Content style={{ margin: '20px 50px', overflowY: 'scroll' }}>
               <div
@@ -334,14 +339,9 @@ const Chat = ({ vendor }) => {
                     renderItem={(message) => <Message message={message} />}
                   />
                 ) : (
-                  <div>
+                  <div class='flex flex-col items-center justify-center h-96'>
                     <p>Select a conversation to view messages</p>
-                    <Button type='primary' onClick={handleStartConvClick}>
-                      New Chat
-                    </Button>
-                    <Button type='default' onClick={fetchAllUserConversations}>
-                      Refresh
-                    </Button>
+
                     {!vendor && (
                       <div>
                         <p>

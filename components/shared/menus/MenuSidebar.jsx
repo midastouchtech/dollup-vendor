@@ -1,63 +1,68 @@
-import React from "react";
-import Link from "next/link";
-import { useRouter } from "next/router";
+import React from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 const MenuSidebar = () => {
   const router = useRouter();
   const menuItems = [
     {
-      text: "Dashboard",
-      url: "/",
-      icon: "icon-home",
+      text: 'Dashboard',
+      url: '/',
+      icon: 'icon-home',
     },
     {
-      text: "Services",
-      url: "/services",
-      icon: "icon-database",
+      text: 'Services',
+      url: '/services',
+      icon: 'icon-database',
     },
     {
-      text: "Products",
-      url: "/products",
-      icon: "icon-database",
+      text: 'Products',
+      url: '/products',
+      icon: 'icon-database',
     },
     {
-      text: "Bookings",
-      url: "/bookings",
-      icon: "icon-bag2",
+      text: 'Bookings',
+      url: '/bookings',
+      icon: 'icon-bag2',
     },
     {
-      text: "Customers",
-      url: "/customers",
-      icon: "icon-users2",
+      text: 'Messages',
+      url: '/chat',
+      icon: 'icon-bubble',
     },
     {
-      text: "Stylists",
-      url: "/stylists",
-      icon: "icon-users2",
+      text: 'Customers',
+      url: '/customers',
+      icon: 'icon-users2',
     },
     {
-      text: "Request",
-      url: "/categories/request-category",
-      icon: "icon-cog",
+      text: 'Stylists',
+      url: '/stylists',
+      icon: 'icon-users2',
     },
     {
-      text: "Reports",
-      url: "/reports",
-      icon: "icon-cog",
+      text: 'Request',
+      url: '/categories/request-category',
+      icon: 'icon-cog',
     },
     {
-      text: "Settings",
-      url: "/settings",
-      icon: "icon-cog",
+      text: 'Reports',
+      url: '/reports',
+      icon: 'icon-cog',
+    },
+    {
+      text: 'Settings',
+      url: '/settings',
+      icon: 'icon-cog',
     },
   ];
 
   return (
-    <ul className="menu">
+    <ul className='menu'>
       {menuItems.map((item, index) => (
         <li
           key={index}
-          className={router.pathname === item.url ? "active" : ""}
+          className={router.pathname === item.url ? 'active' : ''}
         >
           <Link href={item.url}>
             <p>
