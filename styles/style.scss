@@ -5,6 +5,10 @@
     Date Updated: 2020-12-02T12:22:15+07:00
     Developed by: nouthemes
 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @import 'antd/dist/antd.css';
 @import 'utilies/mixin';
 @import 'vendor/media_query';
@@ -221,4 +225,7 @@
     background-color: #d9888817 !important;
   }
   border: 1px solid #ff000029;
+}
+.ant-select-selection-search-input {
+  --tw-ring-color: transparent !important;
 }
