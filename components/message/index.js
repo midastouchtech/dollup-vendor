@@ -35,7 +35,7 @@ const MessageContent = styled.div`
   display: flex;
   flex-direction: column;
   max-width: 80%;
-  background-color: ${(props) => (props.primary ? '#2b3334' : '#e5e7eb')};
+  background-color: ${(props) => (props.primary ? '#06b6d4' : '#e5e7eb')};
   color: #fff;
   p {
     color: ${(props) => (props.primary ? '#fff' : '#2b3334')};
@@ -51,6 +51,7 @@ const TagContainer = styled.div`
   margin-left: 48px;
   padding: 4px;
   border-radius: 4px;
+  justify-content: ${(props) => (props.end ? 'flex-end' : 'flex-start')};
 `;
 
 const CustomPopoverContent = styled.div`
@@ -219,7 +220,7 @@ const Message = ({ message }) => {
         )}
       </SenderInfo>
       {tags.length > 0 && (
-        <TagContainer>
+        <TagContainer end={message.senderType === 'vendor'}>
           {tags.map((tag) => (
             <Popover
               key={tag.id}

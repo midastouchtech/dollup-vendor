@@ -70,6 +70,9 @@ const Chat = ({ vendor }) => {
   const [fetchedConversation, setFetchedConversation] = useState(false);
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
+  const [messageInterval, setMessageInterval] = useState(null);
+  const [chatsInterval, setChatsInterval] = useState(null);
+  const [fetchingMessages, setFetchingMessages] = useState(false);
   const [newMessage, setNewMessage] = useState({
     message: '',
     taggedServices: [],
@@ -129,11 +132,13 @@ const Chat = ({ vendor }) => {
 
   const fetchConversationMessages = async (conversationId) => {
     try {
+      setFetchingMessages(true);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_SOCKET_URL}/api/conversations/${conversationId}/messages`
       );
       const data = await response.json();
       setMessages(data);
+      setFetchingMessages(false);
     } catch (error) {
       console.error(error);
     }
@@ -142,6 +147,9 @@ const Chat = ({ vendor }) => {
   const handleConversationClick = (conversation) => {
     setSelectedConversation(conversation);
     fetchConversationMessages(conversation.id);
+    clearInterval(chatsInterval);
+    clearInterval(messageInterval);
+    startIntervals(conversation);
   };
 
   const handleSendMessage = async (m) => {
@@ -201,6 +209,19 @@ const Chat = ({ vendor }) => {
     }
   }, [vendor]);
 
+  const startIntervals = async (c) => {
+    clearInterval(messageInterval);
+    const intervalId = setInterval(() => {
+      fetchConversationMessages(c?.id);
+    }, 5000);
+    setMessageInterval(intervalId);
+    clearInterval(chatsInterval);
+    const cintervalId = setInterval(() => {
+      fetchAllUserConversations();
+    }, 5000);
+    setChatsInterval(cintervalId);
+  };
+
   const handleStartConvClick = async () => {
     await startNewConversation();
     await fetchAllUserConversations();
@@ -208,9 +229,11 @@ const Chat = ({ vendor }) => {
   };
 
   const placeholder = 'https://via.placeholder.com/150';
+
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+
   return (
     <ContainerDashboard title='Start chat'>
       <ChatWrapper>
@@ -270,41 +293,6 @@ const Chat = ({ vendor }) => {
                 },
               ]}
             />
-            {/* <Menu
-              defaultSelectedKeys={['1']}
-              style={{ height: '100%' }}
-              defaultOpenKeys={['sub1']}
-              mode='inline'
-              theme='dark'
-              inlineCollapsed={menuVisible}
-              items={[
-                { key: '1', title: 'New Chat' },
-                { key: '2', title: 'Refresh' },
-              ]}
-            >
-              <Menu.Item key='1'>
-                <Button type='primary' onClick={handleStartConvClick}>
-                  New Chat
-                </Button>
-              </Menu.Item>
-              <Menu.Item key='2'>
-                <Button type='default' onClick={fetchAllUserConversations}>
-                  Refresh
-                </Button>
-              </Menu.Item>
-              {conversations.map((conv) => (
-                <Menu.Item
-                  key={conv.id}
-                  onClick={() => handleConversationClick(conv)}
-                >
-                  <List.Item.Meta
-                    avatar={<Avatar src={conv?.with?.avatar || placeholder} />}
-                    title={conv?.user?.name || conv.user.storeName}
-                    description={moment(conv?.creationDate).fromNow()}
-                  />
-                </Menu.Item>
-              ))}
-            </Menu> */}
           </ChatSider>
           <Layout>
             <Header style={{ padding: 0, background: colorBgContainer }}>
@@ -333,6 +321,13 @@ const Chat = ({ vendor }) => {
                   borderRadius: borderRadiusLG,
                 }}
               >
+                {fetchingMessages && (
+                  <>
+                    <div className='absolute right-10 top-20'>
+                      <div class='w-6 h-6 border-2 border-cyan-500 border-t-transparent border-solid rounded-full animate-spin'></div>
+                    </div>
+                  </>
+                )}
                 {selectedConversation ? (
                   <List
                     dataSource={messages}
